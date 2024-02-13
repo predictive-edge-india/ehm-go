@@ -14,6 +14,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/google/uuid"
 	"github.com/iisc/demo-go/database"
 	"github.com/iisc/demo-go/managers"
 	"github.com/iisc/demo-go/models"
@@ -127,7 +128,7 @@ func main() {
 
 	opts := MQTT.NewClientOptions().AddBroker(fmt.Sprintf("tcp://%s:%s", models.Environments.TcpIp, models.Environments.TcpPort))
 
-	opts.SetClientID("magnus-mbp")
+	opts.SetClientID(uuid.NewString())
 	opts.SetDefaultPublishHandler(f)
 	topic := models.Environments.UniversalTopic
 
