@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -42,7 +43,20 @@ var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	}
 	if currentParam.PacketType == models.InputDataType.FFT {
 		currentParam.RMS = gRms
-		database.CreateCurrentParameter(*currentParam)
+		currentParam = database.CreateCurrentParameter(*currentParam)
+
+		publishTopic := fmt.Sprintf("iisc/web/graph/%s/%s", currentParam.EhmDeviceId, currentParam.ParamType)
+
+		dataToSend, err := json.Marshal(currentParam.Json())
+		if err != nil {
+			log.Errorln(err.Error())
+		} else {
+			log.Println("Publishing to topic: ", publishTopic)
+			err := client.Publish(publishTopic, 0, false, dataToSend).Error()
+			if err != nil {
+				log.Errorln(err.Error())
+			}
+		}
 	}
 }
 

@@ -6,19 +6,20 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func CreateCurrentParameter(currentParameter models.CurrentParameter) {
+func CreateCurrentParameter(currentParameter models.CurrentParameter) *models.CurrentParameter {
 	err := Database.Save(&currentParameter).Error
 	if err != nil {
 		log.Errorln(err.Error())
 	}
+	return &currentParameter
 }
 
 func FindLatestEhmDeviceCurrentParameter(deviceId uuid.UUID, paramType string) models.CurrentParameter {
 	var currentParameter models.CurrentParameter
-	Database.First(&currentParameter,
+	Database.Order("created_at DESC").First(&currentParameter,
 		"ehm_device_id = ? AND param_type = ?",
 		deviceId,
 		paramType,
-	).Order("created_at DESC")
+	)
 	return currentParameter
 }
