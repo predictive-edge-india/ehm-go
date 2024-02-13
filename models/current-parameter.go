@@ -18,10 +18,11 @@ type CurrentParameter struct {
 
 func (u CurrentParameter) Json() map[string]interface{} {
 	payload := map[string]interface{}{
-		"id":   u.Id,
-		"rms":  u.RMS,
-		"fft":  u.FFT,
-		"type": u.ParamType,
+		"id":        u.Id,
+		"rms":       u.RMS,
+		"fft":       u.FFT,
+		"type":      u.ParamType,
+		"createdAt": u.CreatedAt,
 	}
 
 	return payload

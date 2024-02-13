@@ -5,14 +5,26 @@ import (
 	"github.com/iisc/demo-go/models"
 )
 
-func FindEhmDevice(serialNo string) models.EhmDevice {
+func FindAllEhmDevices() []models.EhmDevice {
+	var devices []models.EhmDevice
+	Database.Find(&devices, "deleted_at IS NULL")
+	return devices
+}
+
+func FindEhmDeviceById(ehmDeviceId uuid.UUID) models.EhmDevice {
+	var ehmDevice models.EhmDevice
+	Database.First(&ehmDevice, "id = ?", ehmDeviceId)
+	return ehmDevice
+}
+
+func FindEhmDeviceBySerialNo(serialNo string) models.EhmDevice {
 	var ehmDevice models.EhmDevice
 	Database.First(&ehmDevice, "serial_no = ?", serialNo)
 	return ehmDevice
 }
 
 func FindOrCreateEhmDevice(serialNo string) (models.EhmDevice, error) {
-	ehmDevice := FindEhmDevice(serialNo)
+	ehmDevice := FindEhmDeviceBySerialNo(serialNo)
 	if ehmDevice.Id == uuid.Nil {
 		return CreateEhmDevice(serialNo)
 	}
