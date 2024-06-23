@@ -57,7 +57,7 @@ func ParseFft(message string) [][]float64 {
 
 	for _, plot := range plots {
 		coords := strings.Split(plot, ",")
-		if len(coords) == 2 {
+		if len(coords) == 2 && helpers.ParseFloat64(coords[0]) > 0 {
 			x := helpers.ParseFloat64(coords[0])
 			y := helpers.ParseFloat64(coords[1])
 			p := []float64{x, y}
