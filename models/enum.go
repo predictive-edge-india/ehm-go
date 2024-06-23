@@ -13,8 +13,8 @@ func newEnvironmentRegistry() *environmentRegistry {
 		DBPort:         os.Getenv("IISC_DB_PORT"),
 		ApiPort:        os.Getenv("API_PORT"),
 		LogPath:        os.Getenv("LOG_PATH"),
-		TcpIp:          os.Getenv("TCP_IP"),
-		TcpPort:        os.Getenv("TCP_PORT"),
+		MqttHost:       os.Getenv("MQTT_HOST"),
+		MqttPort:       os.Getenv("MQTT_PORT"),
 		UniversalTopic: os.Getenv("UNIVERSAL_TOPIC"),
 	}
 }
@@ -27,8 +27,8 @@ type environmentRegistry struct {
 	DBPort         string
 	ApiPort        string
 	LogPath        string
-	TcpIp          string
-	TcpPort        string
+	MqttHost       string
+	MqttPort       string
 	UniversalTopic string
 }
 

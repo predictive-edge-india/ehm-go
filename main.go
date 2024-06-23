@@ -126,7 +126,7 @@ func main() {
 	database.InitDatabase()
 	log.Info("Connected to DB!")
 
-	opts := MQTT.NewClientOptions().AddBroker(fmt.Sprintf("tcp://%s:%s", models.Environments.TcpIp, models.Environments.TcpPort))
+	opts := MQTT.NewClientOptions().AddBroker(fmt.Sprintf("tcp://%s:%s", models.Environments.MqttHost, models.Environments.MqttPort))
 
 	opts.SetClientID(uuid.NewString())
 	opts.SetDefaultPublishHandler(f)
