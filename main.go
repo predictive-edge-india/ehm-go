@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -33,32 +32,9 @@ var (
 	app  *fiber.App
 )
 
-var gRms float64
-
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	log.Printf("%s: %s\n", msg.Topic(), msg.Payload())
-	currentParam := managers.ProcessPacket(msg.Topic(), string(msg.Payload()))
-
-	if currentParam.PacketType == models.InputDataType.RMS {
-		gRms = currentParam.RMS
-	}
-	if currentParam.PacketType == models.InputDataType.FFT {
-		currentParam.RMS = gRms
-		currentParam = database.CreateCurrentParameter(*currentParam)
-
-		publishTopic := fmt.Sprintf("iisc/web/graph/%s/%s", currentParam.EhmDeviceId, currentParam.ParamType)
-
-		dataToSend, err := json.Marshal(currentParam.Json())
-		if err != nil {
-			log.Errorln(err.Error())
-		} else {
-			log.Println("Publishing to topic: ", publishTopic)
-			err := client.Publish(publishTopic, 0, false, dataToSend).Error()
-			if err != nil {
-				log.Errorln(err.Error())
-			}
-		}
-	}
+	managers.ProcessPacket(client, msg.Topic(), string(msg.Payload()))
 }
 
 func initLogger() {

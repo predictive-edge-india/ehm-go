@@ -31,6 +31,7 @@ func Migrate(db *gorm.DB) {
 	err = db.AutoMigrate(
 		&models.EhmDevice{},
 		&models.CurrentParameter{},
+		&models.FuelPercentage{},
 	)
 	if err != nil {
 		log.Fatal("Error migrating DB", err)

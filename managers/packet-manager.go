@@ -4,43 +4,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/iisc/demo-go/database"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
+
 	"github.com/iisc/demo-go/helpers"
-	"github.com/iisc/demo-go/models"
-	log "github.com/sirupsen/logrus"
 )
 
-func ProcessPacket(topic, message string) *models.CurrentParameter {
-	newParam := new(models.CurrentParameter)
-	deviceId, paramType, dataType, err := helpers.GetTopicData(topic)
-	if err != nil {
-		log.Errorln(err.Error())
-		return newParam
+func ProcessPacket(client MQTT.Client, topic, message string) {
+	topicType := helpers.GetTopicType(topic)
+	if topicType == 1 {
+		ProcessCurrentMessage(client, topic, message)
+	} else if topicType == 2 {
+		ProcessFuelPercentage(client, topic, message)
 	}
-
-	ehmDevice, err := database.FindOrCreateEhmDevice(deviceId)
-	if err != nil {
-		log.Errorln(err.Error())
-		return newParam
-	}
-
-	newParam.ParamType = paramType
-	newParam.EhmDeviceId = &ehmDevice.Id
-
-	if dataType == models.InputDataType.RMS {
-		rmsValue, err := parseRms(message)
-		if err != nil {
-			log.Errorln(err.Error())
-			return newParam
-		}
-		newParam.RMS = helpers.ToFixed(rmsValue, 2)
-	} else if dataType == models.InputDataType.FFT {
-		fftValues := ParseFft(message)
-		newParam.FFT = fftValues
-	}
-
-	newParam.PacketType = dataType
-	return newParam
 }
 
 func parseRms(message string) (float64, error) {
