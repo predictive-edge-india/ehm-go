@@ -45,3 +45,11 @@ func ParseFloat32(str string) float32 {
 	}
 	return float32(newVal)
 }
+
+func StringToInt8(str string) int8 {
+	newVal, err := strconv.ParseInt(str, 10, 8)
+	if err != nil {
+		return 0
+	}
+	return int8(newVal)
+}

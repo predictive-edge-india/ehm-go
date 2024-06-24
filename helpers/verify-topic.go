@@ -33,5 +33,12 @@ func GetTopicType(topic string) int32 {
 		return 4
 	}
 
+	// engine param topic
+	pattern = `^iisc\/ehm\/\d+\/engine$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return 5
+	}
+
 	return -1
 }

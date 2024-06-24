@@ -34,6 +34,7 @@ func Migrate(db *gorm.DB) {
 		&models.FuelPercentage{},
 		&models.DeviceFault{},
 		&models.PowerParam{},
+		&models.EngineParam{},
 	)
 	if err != nil {
 		log.Fatal("Error migrating DB", err)
