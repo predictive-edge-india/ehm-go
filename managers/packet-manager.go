@@ -19,5 +19,7 @@ func ProcessPacket(client MQTT.Client, topic, message string) {
 		processor.ProcessPowerParam(client, topic, message)
 	} else if topicType == 5 {
 		processor.ProcessEngineParam(client, topic, message)
+	} else if topicType == 6 {
+		processor.ProcessTemperature(client, topic, message)
 	}
 }

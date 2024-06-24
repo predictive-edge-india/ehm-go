@@ -40,5 +40,12 @@ func GetTopicType(topic string) int32 {
 		return 5
 	}
 
+	// temperature param topic
+	pattern = `^iisc\/ehm\/\d+\/ntc$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return 6
+	}
+
 	return -1
 }
