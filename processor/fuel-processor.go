@@ -1,4 +1,4 @@
-package managers
+package processor
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ import (
 )
 
 func ProcessFuelPercentage(client MQTT.Client, topic string, message string) {
-	deviceId, err := processFuelPercentage(topic)
+	deviceId, err := processFuelPercentageTopic(topic)
 	if err != nil {
 		log.Errorln(err.Error())
 		return
@@ -53,7 +53,7 @@ func ProcessFuelPercentage(client MQTT.Client, topic string, message string) {
 	}
 }
 
-func processFuelPercentage(topic string) (string, error) {
+func processFuelPercentageTopic(topic string) (string, error) {
 	rawString := strings.Replace(topic, "iisc/ehm/", "", 1)
 	rawStringArr := strings.Split(rawString, "/")
 

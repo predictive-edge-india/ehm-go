@@ -19,5 +19,12 @@ func GetTopicType(topic string) int32 {
 		return 2
 	}
 
+	// fault topic
+	pattern = `^iisc\/ehm\/\d+\/faults$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return 3
+	}
+
 	return -1
 }
