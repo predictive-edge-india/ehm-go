@@ -53,3 +53,11 @@ func StringToInt8(str string) int8 {
 	}
 	return int8(newVal)
 }
+
+func KelvinToCelsius(kelvin float32) float32 {
+	return kelvin - 273.15
+}
+
+func Float64ToFloat32(f float64) float32 {
+	return float32(f)
+}

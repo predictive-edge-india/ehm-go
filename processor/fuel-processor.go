@@ -40,12 +40,11 @@ func ProcessFuelPercentage(client MQTT.Client, topic string, message string) {
 		return
 	}
 
-	publishTopic := fmt.Sprintf("iisc/web/fuel/%s", fuelPercentage.EhmDeviceId)
+	publishTopic := fmt.Sprintf("iisc/web/%s/fuel", fuelPercentage.EhmDeviceId)
 	dataToSend, err := json.Marshal(fuelPercentage.Json())
 	if err != nil {
 		log.Errorln(err.Error())
 	} else {
-		log.Println("Publishing to topic: ", publishTopic)
 		err := client.Publish(publishTopic, 0, false, dataToSend).Error()
 		if err != nil {
 			log.Errorln(err.Error())

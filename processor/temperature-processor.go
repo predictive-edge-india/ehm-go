@@ -28,7 +28,7 @@ func ProcessTemperature(client MQTT.Client, topic string, message string) {
 	var temperatureParam models.TemperatureParam
 
 	rawStringArr := strings.Split(message, ",")
-	if len(rawStringArr) != 30 {
+	if len(rawStringArr) != 3 {
 		return
 	}
 
@@ -40,7 +40,7 @@ func ProcessTemperature(client MQTT.Client, topic string, message string) {
 	}
 
 	temperatureParam.EhmDeviceId = &ehmDevice.Id
-	temperatureParam.Temperature = temperatures
+	temperatureParam.Temperatures = temperatures
 
 	err = database.Database.Create(&temperatureParam).Error
 	if err != nil {
@@ -48,12 +48,11 @@ func ProcessTemperature(client MQTT.Client, topic string, message string) {
 		return
 	}
 
-	publishTopic := fmt.Sprintf("iisc/web/temperature/%s", temperatureParam.EhmDeviceId)
+	publishTopic := fmt.Sprintf("iisc/web/%s/temperature", temperatureParam.EhmDeviceId)
 	dataToSend, err := json.Marshal(temperatureParam.Json())
 	if err != nil {
 		log.Errorln(err.Error())
 	} else {
-		log.Println("Publishing to topic: ", publishTopic)
 		err := client.Publish(publishTopic, 0, false, dataToSend).Error()
 		if err != nil {
 			log.Errorln(err.Error())

@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -14,7 +13,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var gRms float64
+var gI1Rms float64
+var gXRms float64
 
 func ProcessCurrentMessage(client MQTT.Client, topic string, message string) {
 	newParam := new(models.CurrentParameter)
@@ -49,28 +49,29 @@ func ProcessCurrentMessage(client MQTT.Client, topic string, message string) {
 	newParam.PacketType = dataType
 
 	if newParam.PacketType == models.InputDataType.RMS {
-		gRms = newParam.RMS
-	}
-	if newParam.PacketType == models.InputDataType.FFT && gRms > 0 {
-		newParam.RMS = gRms
-		newParam = database.CreateCurrentParameter(*newParam)
-
-		publishTopic := fmt.Sprintf("iisc/web/graph/%s/%s", newParam.EhmDeviceId, newParam.ParamType)
-
-		dataToSend, err := json.Marshal(newParam.Json())
-		if err != nil {
-			log.Errorln(err.Error())
-		} else {
-			log.Println("Publishing to topic: ", publishTopic)
-			err := client.Publish(publishTopic, 0, false, dataToSend).Error()
-			if err != nil {
-				log.Errorln(err.Error())
-			}
+		if paramType == "i1" {
+			gI1Rms = newParam.RMS
+		} else if paramType == "x" {
+			gXRms = newParam.RMS
 		}
+	}
+
+	if newParam.PacketType == models.InputDataType.FFT {
+		if gI1Rms > 0 && paramType == "i1" {
+			newParam.RMS = gI1Rms
+			newParam = database.CreateCurrentParameter(*newParam)
+		} else if gXRms > 0 && paramType == "x" {
+			newParam.RMS = gXRms
+			newParam = database.CreateCurrentParameter(*newParam)
+		}
+
+		publishTopic := fmt.Sprintf("iisc/web/%s/current/fft/%s", newParam.EhmDeviceId, newParam.ParamType)
+		helpers.PublishToTopic(client, publishTopic, newParam.Json())
 	}
 }
 
 func processCurrentTopic(topic string) (string, string, int32, error) {
+
 	rawString := strings.Replace(topic, "iisc/ehm/", "", 1)
 	rawStringArr := strings.Split(rawString, "/")
 

@@ -6,7 +6,7 @@ import (
 
 func GetTopicType(topic string) int32 {
 	// current topic
-	pattern := `^iisc/ehm/.*\/(i1|i2|i3)/(rms|fft)$`
+	pattern := `^iisc/ehm/.*\/(i1|i2|i3|v1|x)/(rms|fft)$`
 	regex := regexp.MustCompile(pattern)
 	if regex.MatchString(topic) {
 		return 1

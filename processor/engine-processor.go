@@ -70,12 +70,11 @@ func ProcessEngineParam(client MQTT.Client, topic string, message string) {
 		return
 	}
 
-	publishTopic := fmt.Sprintf("iisc/web/engine/%s", engineParam.EhmDeviceId)
+	publishTopic := fmt.Sprintf("iisc/web/%s/engine", engineParam.EhmDeviceId)
 	dataToSend, err := json.Marshal(engineParam.Json())
 	if err != nil {
 		log.Errorln(err.Error())
 	} else {
-		log.Println("Publishing to topic: ", publishTopic)
 		err := client.Publish(publishTopic, 0, false, dataToSend).Error()
 		if err != nil {
 			log.Errorln(err.Error())
