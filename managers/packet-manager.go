@@ -15,5 +15,7 @@ func ProcessPacket(client MQTT.Client, topic, message string) {
 		processor.ProcessFuelPercentage(client, topic, message)
 	} else if topicType == 3 {
 		processor.ProcessFaults(client, topic, message)
+	} else if topicType == 4 {
+		processor.ProcessPowerParam(client, topic, message)
 	}
 }

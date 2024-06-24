@@ -26,5 +26,12 @@ func GetTopicType(topic string) int32 {
 		return 3
 	}
 
+	// power param topic
+	pattern = `^iisc\/ehm\/\d+\/power$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return 4
+	}
+
 	return -1
 }
