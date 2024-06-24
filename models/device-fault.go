@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type DeviceFault struct {
+type FaultPanel struct {
 	gorm.Model
 	Id                      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
 	LowOilPressure          bool      `gorm:"column:low_oil_pressure" json:"lowOilPressure"`
@@ -46,7 +46,11 @@ type DeviceFault struct {
 	EhmDevice   EhmDevice  `gorm:"foreignKey:EhmDeviceId"`
 }
 
-func (u DeviceFault) Json() map[string]interface{} {
+func (u FaultPanel) TableName() string {
+	return "device_faults"
+}
+
+func (u FaultPanel) Json() map[string]interface{} {
 	payload := map[string]interface{}{
 		"id":                      u.Id,
 		"lowOilPressure":          u.LowOilPressure,

@@ -83,6 +83,7 @@ func loadRoutes() {
 	v1 := app.Group("/v1")
 
 	routes.EhmDeviceRoutes(v1)
+	routes.ParameterRoutes(v1)
 }
 
 func main() {

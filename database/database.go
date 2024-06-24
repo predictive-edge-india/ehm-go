@@ -32,7 +32,7 @@ func Migrate(db *gorm.DB) {
 		&models.EhmDevice{},
 		&models.CurrentParameter{},
 		&models.FuelPercentage{},
-		&models.DeviceFault{},
+		&models.FaultPanel{},
 		&models.PowerParam{},
 		&models.EngineParam{},
 		&models.TemperatureParam{},

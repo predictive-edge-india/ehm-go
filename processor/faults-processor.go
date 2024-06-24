@@ -24,7 +24,7 @@ func ProcessFaults(client MQTT.Client, topic string, message string) {
 		return
 	}
 
-	var deviceFault models.DeviceFault
+	var deviceFault models.FaultPanel
 
 	rawStringArr := strings.Split(message, ",")
 	if len(rawStringArr) != 33 {
