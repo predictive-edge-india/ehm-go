@@ -25,8 +25,14 @@ func GetLatestEhmDeviceReading(c *fiber.Ctx) error {
 		return helpers.ResourceNotFoundError(c, "Current parameter")
 	}
 
+	tempCoeff := database.GetTemperatureCoefficientForDevice(ehmDevice.Id)
+	if tempCoeff.Id == uuid.Nil {
+		return helpers.ResourceNotFoundError(c, "Temperature coefficient")
+	}
+
 	payload := fiber.Map{
-		"currentParameter": currentParameter.Json(),
+		"currentParameter":       currentParameter.Json(),
+		"temperatureCoefficient": tempCoeff.Json(),
 	}
 	return c.JSON(helpers.BuildResponse(payload))
 }

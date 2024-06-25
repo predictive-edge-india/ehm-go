@@ -9,4 +9,5 @@ func ParameterRoutes(router fiber.Router) {
 	devices := router.Group("/devices/:ehmDeviceId")
 	parameters := devices.Group("/parameters")
 	parameters.Get("/fault-panel", parameterHandlers.GetFaultPanel)
+	parameters.Get("/power-parameter", parameterHandlers.GetPowerParameter)
 }
