@@ -19,9 +19,12 @@ func InitDatabase() *gorm.DB {
 		log.Fatal("failed to connect database")
 	}
 
-	err = Database.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error
-	if err != nil {
+	if err = Database.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
 		log.Fatal("Error creating extensions", err)
+	}
+
+	if err = Database.Exec("CREATE EXTENSION IF NOT EXISTS postgis;").Error; err != nil {
+		log.Error("Error creating postgis extension: ", err)
 	}
 	Migrate(Database)
 	return Database
@@ -29,6 +32,7 @@ func InitDatabase() *gorm.DB {
 
 func Migrate(db *gorm.DB) {
 	err = db.AutoMigrate(
+		&models.Customer{},
 		&models.EhmDevice{},
 		&models.CurrentParameter{},
 		&models.FuelPercentage{},
