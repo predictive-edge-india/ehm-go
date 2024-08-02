@@ -3,13 +3,12 @@ package database
 import (
 	"github.com/google/uuid"
 	"github.com/predictive-edge-india/ehm-go/models"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func CreateCurrentParameter(currentParameter models.CurrentParameter) *models.CurrentParameter {
-	err := Database.Save(&currentParameter).Error
-	if err != nil {
-		log.Errorln(err.Error())
+	if err := Database.Save(&currentParameter).Error; err != nil {
+		log.Error().AnErr("CreateCurrentParameter", err).Send()
 	}
 	return &currentParameter
 }

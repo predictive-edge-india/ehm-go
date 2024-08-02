@@ -10,18 +10,18 @@ import (
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func ProcessPowerParam(client MQTT.Client, topic string, message string) {
 	deviceId, err := processPowerParamTopic(topic)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessPowerParam: processPowerParamTopic", err).Send()
 		return
 	}
 	ehmDevice, err := database.FindOrCreateEhmDevice(deviceId)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessPowerParam: FindOrCreateEhmDevice", err).Send()
 		return
 	}
 
@@ -56,20 +56,19 @@ func ProcessPowerParam(client MQTT.Client, topic string, message string) {
 		TotalVA:        helpers.StringToUint16(rawStringArr[21]),
 	}
 
-	err = database.Database.Create(&powerParam).Error
-	if err != nil {
-		log.Errorln(err.Error())
+	if err = database.Database.Create(&powerParam).Error; err != nil {
+		log.Error().AnErr("ProcessPowerParam: create powerParam", err).Send()
 		return
 	}
 
 	publishTopic := fmt.Sprintf("iisc/web/%s/power", powerParam.EhmDeviceId)
 	dataToSend, err := json.Marshal(powerParam.Json())
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessPowerParam: JSON Marshall", err).Send()
 	} else {
 		err := client.Publish(publishTopic, 0, false, dataToSend).Error()
 		if err != nil {
-			log.Errorln(err.Error())
+			log.Error().AnErr("ProcessPowerParam: MQTT publish", err).Send()
 		}
 	}
 }

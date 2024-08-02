@@ -4,27 +4,30 @@ import (
 	"fmt"
 
 	"github.com/predictive-edge-india/ehm-go/models"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var Database *gorm.DB
 var err error
 
 func InitDatabase() *gorm.DB {
-	Database, err = gorm.Open(postgres.Open(getDSN()), &gorm.Config{})
+	Database, err = gorm.Open(postgres.Open(getDSN()), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Error),
+	})
 	if err != nil {
-		log.Fatal("failed to connect database")
+		log.Fatal().AnErr("DB connection", err).Send()
 	}
 
 	if err = Database.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
-		log.Fatal("Error creating extensions", err)
+		log.Fatal().AnErr("Creating UUID extension", err).Send()
 	}
 
 	if err = Database.Exec("CREATE EXTENSION IF NOT EXISTS postgis;").Error; err != nil {
-		log.Error("Error creating postgis extension: ", err)
+		log.Error().AnErr("Creating postgis extension", err).Send()
 	}
 	Migrate(Database)
 	return Database
@@ -42,7 +45,7 @@ func Migrate(db *gorm.DB) {
 		&models.TemperatureParam{},
 	)
 	if err != nil {
-		log.Fatal("Error migrating DB", err)
+		log.Fatal().AnErr("Migrating DB", err).Send()
 	}
 }
 

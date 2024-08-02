@@ -18,7 +18,9 @@ import (
 	"github.com/predictive-edge-india/ehm-go/managers"
 	"github.com/predictive-edge-india/ehm-go/models"
 	"github.com/predictive-edge-india/ehm-go/routes"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -37,32 +39,13 @@ var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	managers.ProcessPacket(client, msg.Topic(), string(msg.Payload()))
 }
 
-func initLogger() {
-	lumberjackLogger := &lumberjack.Logger{
-		Filename:   filepath.ToSlash(models.Environments.LogPath),
-		MaxSize:    500, // megabytes
-		MaxBackups: 3,
-		MaxAge:     30,   //days
-		Compress:   true, // disabled by default
-	}
-	// Fork writing into two outputs
-	multiWriter := io.MultiWriter(os.Stderr, lumberjackLogger)
-
-	logFormatter := new(log.TextFormatter)
-	logFormatter.FullTimestamp = true
-
-	log.SetFormatter(logFormatter)
-	log.SetLevel(log.InfoLevel)
-	log.SetOutput(multiWriter)
-}
-
 func HandleErrors(ctx *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	message := "Internal Server Error"
 
 	var e *fiber.Error
 	if errors.As(err, &e) {
-		log.Println(e.Message)
+		log.Error().AnErr("Fiber error", e).Send()
 		code = e.Code
 		message = e.Message
 	}
@@ -92,7 +75,7 @@ func main() {
 		ErrorHandler: HandleErrors,
 	}
 
-	initLogger()
+	InitLogger()
 
 	app = fiber.New(config)
 
@@ -101,7 +84,7 @@ func main() {
 	app.Use(cors.New())
 
 	database.InitDatabase()
-	log.Info("Connected to DB!")
+	log.Info().Msg("Connected to DB!")
 
 	opts := MQTT.NewClientOptions().AddBroker(fmt.Sprintf("tcp://%s:%s", models.Environments.MqttHost, models.Environments.MqttPort))
 
@@ -110,7 +93,7 @@ func main() {
 	topic := models.Environments.UniversalTopic
 
 	opts.OnConnect = func(c MQTT.Client) {
-		log.Println("Subscribing to universal topic: ", topic)
+		log.Info().Str("Subscribing", topic).Send()
 		if token := c.Subscribe(topic, 0, f); token.Wait() && token.Error() != nil {
 			panic(token.Error())
 		}
@@ -126,7 +109,53 @@ func main() {
 
 	envPort := models.Environments.ApiPort
 	if len(envPort) == 0 {
-		log.Fatal(app.Listen(HOST + ":" + PORT))
+		log.Fatal().AnErr("Failed starting service", app.Listen(HOST+":"+PORT)).Send()
 	}
-	log.Fatal(app.Listen(HOST + ":" + envPort))
+	log.Fatal().AnErr("Failed starting service", app.Listen(HOST+":"+envPort)).Send()
+}
+
+type SpecificLevelWriter struct {
+	io.Writer
+	Levels []zerolog.Level
+}
+
+func (w SpecificLevelWriter) WriteLevel(level zerolog.Level, p []byte) (int, error) {
+	for _, l := range w.Levels {
+		if l == level {
+			return w.Write(p)
+		}
+	}
+	return len(p), nil
+}
+
+func InitLogger() {
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	consoleWriter := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "2006-01-02 15:04:05.999Z07:00"}
+	errorWriter := zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "2006-01-02 15:04:05.999Z07:00"}
+	lumberjackLogger := &lumberjack.Logger{
+		Filename:   filepath.ToSlash(models.Environments.LogPath),
+		MaxSize:    500, // megabytes
+		MaxBackups: 3,
+		MaxAge:     30,   //days
+		Compress:   true, // disabled by default
+	}
+	multiWriter := zerolog.MultiLevelWriter(
+		SpecificLevelWriter{
+			Writer: consoleWriter,
+			Levels: []zerolog.Level{
+				zerolog.DebugLevel, zerolog.InfoLevel, zerolog.WarnLevel,
+			},
+		},
+		SpecificLevelWriter{
+			Writer: errorWriter,
+			Levels: []zerolog.Level{
+				zerolog.ErrorLevel, zerolog.FatalLevel, zerolog.PanicLevel,
+			},
+		},
+		lumberjackLogger,
+	)
+
+	logger := zerolog.New(multiWriter).With().Timestamp().Logger()
+	log.Logger = logger
 }

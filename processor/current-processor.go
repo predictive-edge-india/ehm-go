@@ -10,7 +10,7 @@ import (
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 var gI1Rms float64
@@ -21,13 +21,13 @@ func ProcessCurrentMessage(client MQTT.Client, topic string, message string) {
 
 	deviceId, paramType, dataType, err := processCurrentTopic(topic)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessCurrentMessage: processCurrentTopic", err).Send()
 		return
 	}
 
 	ehmDevice, err := database.FindOrCreateEhmDevice(deviceId)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessCurrentMessage: FindOrCreateEhmDevice", err).Send()
 		return
 	}
 
@@ -37,7 +37,7 @@ func ProcessCurrentMessage(client MQTT.Client, topic string, message string) {
 	if dataType == models.InputDataType.RMS {
 		rmsValue, err := parseRms(message)
 		if err != nil {
-			log.Errorln(err.Error())
+			log.Error().AnErr("ProcessCurrentMessage: parseRms", err).Send()
 			return
 		}
 		newParam.RMS = helpers.ToFixed(rmsValue, 2)
@@ -71,7 +71,6 @@ func ProcessCurrentMessage(client MQTT.Client, topic string, message string) {
 }
 
 func processCurrentTopic(topic string) (string, string, int32, error) {
-
 	rawString := strings.Replace(topic, "iisc/ehm/", "", 1)
 	rawStringArr := strings.Split(rawString, "/")
 

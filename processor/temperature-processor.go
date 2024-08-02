@@ -10,18 +10,18 @@ import (
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func ProcessTemperature(client MQTT.Client, topic string, message string) {
 	deviceId, err := processTemperatureTopic(topic)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessTemperature: processTemperatureTopic", err).Send()
 		return
 	}
 	ehmDevice, err := database.FindOrCreateEhmDevice(deviceId)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessTemperature: FindOrCreateEhmDevice", err).Send()
 		return
 	}
 
@@ -42,20 +42,19 @@ func ProcessTemperature(client MQTT.Client, topic string, message string) {
 	temperatureParam.EhmDeviceId = &ehmDevice.Id
 	temperatureParam.Temperatures = temperatures
 
-	err = database.Database.Create(&temperatureParam).Error
-	if err != nil {
-		log.Errorln(err.Error())
+	if err = database.Database.Create(&temperatureParam).Error; err != nil {
+		log.Error().AnErr("ProcessTemperature: create temperatureParam", err).Send()
 		return
 	}
 
 	publishTopic := fmt.Sprintf("iisc/web/%s/temperature", temperatureParam.EhmDeviceId)
 	dataToSend, err := json.Marshal(temperatureParam.Json())
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessTemperature: JSON Marshall", err).Send()
 	} else {
 		err := client.Publish(publishTopic, 0, false, dataToSend).Error()
 		if err != nil {
-			log.Errorln(err.Error())
+			log.Error().AnErr("ProcessTemperature: MQTT Publish", err).Send()
 		}
 	}
 }

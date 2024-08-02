@@ -9,18 +9,18 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/models"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func ProcessFaults(client MQTT.Client, topic string, message string) {
 	deviceId, err := processFaultsTopic(topic)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessFaults: processFaultsTopic", err).Send()
 		return
 	}
 	ehmDevice, err := database.FindOrCreateEhmDevice(deviceId)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessFaults: FindOrCreateEhmDevice", err).Send()
 		return
 	}
 
@@ -66,20 +66,19 @@ func ProcessFaults(client MQTT.Client, topic string, message string) {
 	deviceFault.L3LowVoltage = rawStringArr[31] == "1"
 	deviceFault.L3HighVoltage = rawStringArr[32] == "1"
 
-	err = database.Database.Create(&deviceFault).Error
-	if err != nil {
-		log.Errorln(err.Error())
+	if err = database.Database.Create(&deviceFault).Error; err != nil {
+		log.Error().AnErr("ProcessFaults: Create deviceFault", err).Send()
 		return
 	}
 
 	publishTopic := fmt.Sprintf("iisc/web/%s/faults", deviceFault.EhmDeviceId)
 	dataToSend, err := json.Marshal(deviceFault.Json())
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("ProcessFaults: JSON Marshall", err).Send()
 	} else {
 		err := client.Publish(publishTopic, 0, false, dataToSend).Error()
 		if err != nil {
-			log.Errorln(err.Error())
+			log.Error().AnErr("ProcessFaults: Publish topic", err).Send()
 		}
 	}
 }

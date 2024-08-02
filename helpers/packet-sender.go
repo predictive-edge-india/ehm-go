@@ -4,19 +4,17 @@ import (
 	"encoding/json"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func PublishToTopic(client MQTT.Client, topic string, data map[string]interface{}) {
-	log.Infoln("Publishing to topic: " + topic)
+	log.Info().Str("Publishing topic", topic).Send()
 	dataToSend, err := json.Marshal(data)
 	if err != nil {
-		log.Errorln(err.Error())
+		log.Error().AnErr("PublishToTopic: JSON Marshall", err).Send()
 	} else {
-		err := client.Publish(topic, 0, false, dataToSend).Error()
-		if err != nil {
-			log.Errorln(err.Error())
+		if err := client.Publish(topic, 0, false, dataToSend).Error(); err != nil {
+			log.Error().AnErr("PublishToTopic publish error", err).Send()
 		}
 	}
 }
