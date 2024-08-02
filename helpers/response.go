@@ -31,6 +31,13 @@ func NotAuthorizedError(c *fiber.Ctx, v interface{}) error {
 	})
 }
 
+func NotAuthenticatedError(c *fiber.Ctx, v interface{}) error {
+	return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+		"type":    "error",
+		"message": v,
+	})
+}
+
 func CustomError(c *fiber.Ctx, code int, v interface{}) error {
 	return c.Status(code).JSON(fiber.Map{
 		"type":    "error",
