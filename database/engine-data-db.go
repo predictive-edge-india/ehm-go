@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/google/uuid"
-	"github.com/iisc/demo-go/models"
+	"github.com/predictive-edge-india/ehm-go/models"
 )
 
 func GetEngineDataForDevice(deviceId uuid.UUID, paramType string) models.EngineParam {

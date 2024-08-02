@@ -2,7 +2,7 @@ package ehmDeviceHandlers
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/iisc/demo-go/helpers"
+	"github.com/predictive-edge-india/ehm-go/helpers"
 )
 
 func FetchAllCustomers(c *fiber.Ctx) error {

@@ -3,8 +3,8 @@ package parameterHandlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/iisc/demo-go/database"
-	"github.com/iisc/demo-go/helpers"
+	"github.com/predictive-edge-india/ehm-go/database"
+	"github.com/predictive-edge-india/ehm-go/helpers"
 )
 
 func GetFaultPanel(c *fiber.Ctx) error {

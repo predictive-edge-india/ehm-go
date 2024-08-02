@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/google/uuid"
-	"github.com/iisc/demo-go/models"
+	"github.com/predictive-edge-india/ehm-go/models"
 )
 
 func GetTemperatureCoefficientForDevice(deviceId uuid.UUID) models.TemperatureParam {

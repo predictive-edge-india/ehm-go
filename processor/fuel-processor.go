@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/iisc/demo-go/database"
-	"github.com/iisc/demo-go/models"
+	"github.com/predictive-edge-india/ehm-go/database"
+	"github.com/predictive-edge-india/ehm-go/models"
 	log "github.com/sirupsen/logrus"
 )
 

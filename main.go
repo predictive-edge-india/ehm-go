@@ -14,10 +14,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/google/uuid"
-	"github.com/iisc/demo-go/database"
-	"github.com/iisc/demo-go/managers"
-	"github.com/iisc/demo-go/models"
-	"github.com/iisc/demo-go/routes"
+	"github.com/predictive-edge-india/ehm-go/database"
+	"github.com/predictive-edge-india/ehm-go/managers"
+	"github.com/predictive-edge-india/ehm-go/models"
+	"github.com/predictive-edge-india/ehm-go/routes"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -119,7 +119,7 @@ func main() {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	} else {
-		fmt.Printf("Connected to server\n")
+		log.Printf("Connected to MQTT server\n")
 	}
 
 	loadRoutes()

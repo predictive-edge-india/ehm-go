@@ -3,8 +3,8 @@ package managers
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 
-	"github.com/iisc/demo-go/helpers"
-	"github.com/iisc/demo-go/processor"
+	"github.com/predictive-edge-india/ehm-go/helpers"
+	"github.com/predictive-edge-india/ehm-go/processor"
 )
 
 func ProcessPacket(client MQTT.Client, topic, message string) {

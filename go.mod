@@ -1,4 +1,4 @@
-module github.com/iisc/demo-go
+module github.com/predictive-edge-india/ehm-go
 
 go 1.21.6
 

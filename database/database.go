@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/iisc/demo-go/models"
+	"github.com/predictive-edge-india/ehm-go/models"
 	log "github.com/sirupsen/logrus"
 
 	"gorm.io/driver/postgres"

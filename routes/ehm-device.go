@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	ehmDeviceHandlers "github.com/iisc/demo-go/handlers/ehmDevices"
+	ehmDeviceHandlers "github.com/predictive-edge-india/ehm-go/handlers/ehmDevices"
 )
 
 func EhmDeviceRoutes(app fiber.Router) {

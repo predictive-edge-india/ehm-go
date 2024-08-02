@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/iisc/demo-go/helpers"
+	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/rs/zerolog/log"
 
 	"github.com/gofiber/fiber/v2"

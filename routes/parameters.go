@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	parameterHandlers "github.com/iisc/demo-go/handlers/parameters"
+	parameterHandlers "github.com/predictive-edge-india/ehm-go/handlers/parameters"
 )
 
 func ParameterRoutes(router fiber.Router) {
