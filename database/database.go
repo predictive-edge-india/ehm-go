@@ -16,7 +16,7 @@ var err error
 
 func InitDatabase() *gorm.DB {
 	Database, err = gorm.Open(postgres.Open(getDSN()), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Error),
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		log.Fatal().AnErr("DB connection", err).Send()
@@ -38,6 +38,9 @@ func Migrate(db *gorm.DB) {
 		&models.Customer{},
 		&models.User{},
 		&models.UserRole{},
+		&models.AssetClass{},
+		&models.Asset{},
+		&models.Device{},
 	)
 	if err != nil {
 		log.Fatal().AnErr("Migrating DB", err).Send()

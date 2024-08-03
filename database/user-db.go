@@ -56,6 +56,17 @@ func DeleteUser(id uuid.UUID) error {
 	return Database.Delete(&user).Error
 }
 
+func FindUserRoleForUser(ctx *fiber.Ctx, user models.User) (models.UserRole, error) {
+	var userRole models.UserRole
+	Database.
+		Order("access_type ASC, created_at DESC").
+		First(&userRole, "user_id = ?", user.Id.String())
+	if userRole.Id.String() == uuid.Nil.String() {
+		return userRole, helpers.BadRequestError(ctx, "Invalid User UUID!")
+	}
+	return userRole, nil
+}
+
 func FindUserRoleForCustomerUser(ctx *fiber.Ctx, user models.User, customer models.Customer) (models.UserRole, error) {
 	var userRole models.UserRole
 	Database.First(&userRole, "customer_id = ? AND user_id = ?", customer.Id.String(), user.Id.String())
@@ -71,18 +82,24 @@ func FindUserRoleForCustomerUser(ctx *fiber.Ctx, user models.User, customer mode
 	return userRole, nil
 }
 
-func FindCurrentUserCustomer(ctx *fiber.Ctx, user models.User) (models.Customer, error) {
+func FindCurrentUserCustomer(ctx *fiber.Ctx, user models.User) (models.Customer, bool, error) {
 	var currentCustomer models.Customer
-	customerId, err := uuid.Parse(ctx.Params("customerId"))
+
+	customerIdQuery := ctx.Query("customer", "")
+	if customerIdQuery == "" {
+		return currentCustomer, false, errors.New("no customer id provided")
+	}
+
+	customerId, err := uuid.Parse(customerIdQuery)
 	if err != nil {
 		log.Error().AnErr("FindCurrentUserCustomer: UUID parsing", err).Send()
-		return currentCustomer, helpers.BadRequestError(ctx, "Invalid Customer UUID!")
+		return currentCustomer, true, helpers.BadRequestError(ctx, "Invalid Customer UUID!")
 	}
 
 	currentCustomer = FindCustomerById(customerId)
 	if currentCustomer.IsIdNull() {
-		return currentCustomer, helpers.ResourceNotFoundError(ctx, "Customer")
+		return currentCustomer, true, helpers.ResourceNotFoundError(ctx, "Customer")
 	}
 
-	return currentCustomer, nil
+	return currentCustomer, true, nil
 }

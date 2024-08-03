@@ -69,6 +69,8 @@ func loadRoutes() {
 
 	routes.CustomerRoutes(v1)
 	routes.UserRoutes(v1)
+	routes.AssetClassRoutes(v1)
+	routes.AssetRoutes(v1)
 
 	routes.EhmDeviceRoutes(v1)
 	routes.ParameterRoutes(v1)

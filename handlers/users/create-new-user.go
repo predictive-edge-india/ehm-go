@@ -15,7 +15,7 @@ import (
 func CreateNewUser(c *fiber.Ctx) error {
 	user := database.FindUserAuth(c)
 
-	currentCustomer, err := database.FindCurrentUserCustomer(c, user)
+	currentCustomer, _, err := database.FindCurrentUserCustomer(c, user)
 	if err != nil {
 		return err
 	}
