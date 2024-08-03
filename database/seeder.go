@@ -39,7 +39,7 @@ func SeedUser(db *gorm.DB) (*models.User, error) {
 
 func SeedCustomer(db *gorm.DB) (*models.Customer, error) {
 	newCustomer := new(models.Customer)
-	if err := db.First(&models.Customer{}).Scan(&newCustomer).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := db.Select("id, name").First(&models.Customer{}).Scan(&newCustomer).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		newCustomer.Name = "Pai Kane Group"
 		newCustomer.LogoUrl = sql.NullString{
 			Valid:  true,

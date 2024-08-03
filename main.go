@@ -107,7 +107,7 @@ func main() {
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	} else {
-		log.Printf("Connected to MQTT server\n")
+		log.Info().Msg("Connected to MQTT server\n")
 	}
 
 	loadRoutes()

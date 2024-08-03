@@ -13,10 +13,10 @@ func FetchUsers(c *fiber.Ctx) error {
 	user := database.FindUserAuth(c)
 	page, perPage := helpers.GetPagination(c)
 
-	currentCustomer, err := database.FindCurrentUserCustomer(c, user)
-	if err != nil {
-		return err
-	}
+	// currentCustomer, err := database.FindCurrentUserCustomer(c, user)
+	// if err != nil {
+	// 	return err
+	// }
 
 	searchQuery := strings.Trim(c.Query("q"), " ")
 
@@ -25,7 +25,7 @@ func FetchUsers(c *fiber.Ctx) error {
 	chain := database.Database.Table("users").
 		Select("users.*", "user_roles.access_type").
 		Joins("JOIN user_roles ON user_roles.user_id = users.id").
-		Where("user_roles.customer_id = ?", currentCustomer.Id).
+		// Where("user_roles.customer_id = ?", currentCustomer.Id).
 		Where("users.deleted_at IS NULL").
 		Where("users.id != ?", user.Id)
 
@@ -33,7 +33,7 @@ func FetchUsers(c *fiber.Ctx) error {
 		chain = chain.Where("users.name ILIKE ?", "%"+searchQuery+"%")
 	}
 
-	if err = chain.
+	if err := chain.
 		Order("created_at desc").
 		Offset((page - 1) * perPage).
 		Limit(perPage).
@@ -42,10 +42,10 @@ func FetchUsers(c *fiber.Ctx) error {
 	}
 
 	var total int64
-	if err = database.Database.
+	if err := database.Database.
 		Table("users").
 		Joins("JOIN user_roles ON user_roles.user_id = users.id").
-		Where("user_roles.customer_id = ?", currentCustomer.Id).
+		// Where("user_roles.customer_id = ?", currentCustomer.Id).
 		Where("users.deleted_at IS NULL").
 		Where("users.id != ?", user.Id).
 		Count(&total).Error; err != nil {

@@ -12,8 +12,8 @@ type User struct {
 	gorm.Model
 	Id           uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
 	Name         string         `gorm:"column:name" json:"name"`
-	Email        string         `gorm:"column:email;unique" json:"email"`
-	Phone        sql.NullString `gorm:"column:phone;unique" json:"phone"`
+	Email        string         `gorm:"column:email" json:"email"`
+	Phone        sql.NullString `gorm:"column:phone" json:"phone"`
 	ProfilePic   sql.NullString `gorm:"column:profile_pic" json:"profilePic"`
 	PasswordHash string         `gorm:"column:password_hash" json:"passwordHash"`
 	Gender       sql.NullString `gorm:"column:gender" json:"gender"`
