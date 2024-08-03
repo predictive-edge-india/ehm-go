@@ -21,7 +21,7 @@ func SigninWithPassword(c *fiber.Ctx) error {
 
 	//validation
 	if err := c.BodyParser(&jsonBody); err != nil {
-		log.Error().AnErr("SigninWithPassword: bodyparser", err).Send()
+		log.Error().AnErr("SigninWithPassword: Bodyparser", err).Send()
 		return helpers.BadRequestError(c, "Error parsing body!")
 	}
 

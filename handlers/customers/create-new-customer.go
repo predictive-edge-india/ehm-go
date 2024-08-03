@@ -46,7 +46,7 @@ func validateCustomerBody(c *fiber.Ctx) error {
 
 	// Validation
 	if err := c.BodyParser(&jsonBody); err != nil {
-		log.Error().AnErr("CreateNewCustomer: bodyparser", err).Send()
+		log.Error().AnErr("CreateNewCustomer: Bodyparser", err).Send()
 		return helpers.BadRequestError(c, "Error parsing body!")
 	}
 

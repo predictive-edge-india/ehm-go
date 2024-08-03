@@ -1,4 +1,4 @@
-package assetClassHandlers
+package deviceTypeHandlers
 
 import (
 	"github.com/go-playground/validator"
@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func CreateNewAssetClass(c *fiber.Ctx) error {
+func CreateNewDeviceType(c *fiber.Ctx) error {
 	user := database.FindUserAuth(c)
 
 	userRole, err := database.FindUserRoleForUser(c, user)
@@ -31,33 +31,33 @@ func validateRequestBody(c *fiber.Ctx) error {
 
 	// Validation
 	if err := c.BodyParser(&jsonBody); err != nil {
-		log.Error().AnErr("CreateNewAssetClass: bodyparser", err).Send()
+		log.Error().AnErr("CreateNewDeviceType: Bodyparser", err).Send()
 		return helpers.BadRequestError(c, "Error parsing body!")
 	}
 
 	validate := validator.New()
 	if err := validate.Struct(jsonBody); err != nil {
-		log.Error().AnErr("CreateNewAssetClass: Validator", err).Send()
+		log.Error().AnErr("CreateNewDeviceType: Validator", err).Send()
 		return helpers.BadRequestError(c, "Please check your request!")
 	}
 
-	// Check if asset class already exists
-	assetClass := models.AssetClass{}
-	if err := database.Database.Where("name = ?", jsonBody.Name).First(&assetClass).Error; err == nil {
-		return helpers.BadRequestError(c, "Asset class already exists!")
+	// Check if device type already exists
+	deviceType := models.DeviceType{}
+	if err := database.Database.Where("name = ?", jsonBody.Name).First(&deviceType).Error; err == nil {
+		return helpers.BadRequestError(c, "Device type already exists!")
 	}
 
-	newAsset := models.AssetClass{
+	newAsset := models.DeviceType{
 		Name: jsonBody.Name,
 	}
 
 	if err := database.Database.Create(&newAsset).Error; err != nil {
-		log.Error().AnErr("CreateNewAssetClass: Database", err).Send()
+		log.Error().AnErr("CreateNewDeviceType: Database", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
 
 	payload := fiber.Map{
-		"assetClass": newAsset.Json(),
+		"deviceType": newAsset.Json(),
 	}
 
 	return c.JSON(helpers.BuildResponse(payload))

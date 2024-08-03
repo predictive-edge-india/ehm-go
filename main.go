@@ -71,6 +71,8 @@ func loadRoutes() {
 	routes.UserRoutes(v1)
 	routes.AssetClassRoutes(v1)
 	routes.AssetRoutes(v1)
+	routes.DeviceTypeRoutes(v1)
+	routes.DeviceRoutes(v1)
 
 	routes.EhmDeviceRoutes(v1)
 	routes.ParameterRoutes(v1)

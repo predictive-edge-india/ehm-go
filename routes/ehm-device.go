@@ -6,7 +6,7 @@ import (
 )
 
 func EhmDeviceRoutes(app fiber.Router) {
-	devices := app.Group("/devices")
+	devices := app.Group("/ehm-devices")
 	devices.Get("/:ehmDeviceId/:paramType", ehmDeviceHandlers.GetLatestEhmDeviceReading)
 	devices.Get("/", ehmDeviceHandlers.FetchAllEhmDevices)
 }

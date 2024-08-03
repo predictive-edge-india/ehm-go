@@ -7,7 +7,7 @@ import (
 )
 
 func CustomerRoutes(app fiber.Router) {
-	customers := app.Group("/customers")
-	customers.Get("/", middlewares.Protected(), customerHandlers.FetchAllCustomers)
-	customers.Post("/", middlewares.Protected(), customerHandlers.CreateNewCustomer)
+	group := app.Group("/customers")
+	group.Get("/", middlewares.Protected(), customerHandlers.FetchAllCustomers)
+	group.Post("/", middlewares.Protected(), customerHandlers.CreateNewCustomer)
 }

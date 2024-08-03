@@ -7,7 +7,7 @@ import (
 )
 
 func AssetRoutes(app fiber.Router) {
-	assets := app.Group("/assets")
-	assets.Get("/", middlewares.Protected(), assetHandlers.FetchAssets)
-	assets.Post("/", middlewares.Protected(), assetHandlers.CreateNewAsset)
+	group := app.Group("/assets")
+	group.Get("/", middlewares.Protected(), assetHandlers.FetchAssets)
+	group.Post("/", middlewares.Protected(), assetHandlers.CreateNewAsset)
 }

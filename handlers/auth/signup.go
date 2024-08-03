@@ -20,7 +20,7 @@ func SignupUser(c *fiber.Ctx) error {
 		Password string `json:"password" validate:"required,min=6"`
 	}{}
 	if err := c.BodyParser(&jsonBody); err != nil {
-		log.Error().AnErr("SignupUser: bodyparser", err).Send()
+		log.Error().AnErr("SignupUser: Bodyparser", err).Send()
 		return helpers.BadRequestError(c, "Error parsing body!")
 	}
 

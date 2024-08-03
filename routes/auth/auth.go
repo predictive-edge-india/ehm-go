@@ -7,12 +7,12 @@ import (
 )
 
 func AuthRoutes(router fiber.Router) {
-	auth := router.Group("/auth")
-	auth.Post("/signin", func(c *fiber.Ctx) error {
+	group := router.Group("/auth")
+	group.Post("/signin", func(c *fiber.Ctx) error {
 		return authHandlers.SigninWithPassword(c)
 	})
-	auth.Post("/signup", func(c *fiber.Ctx) error {
+	group.Post("/signup", func(c *fiber.Ctx) error {
 		return authHandlers.SignupUser(c)
 	})
-	auth.Get("/validate", middlewares.Protected(), authHandlers.ValidateUser)
+	group.Get("/validate", middlewares.Protected(), authHandlers.ValidateUser)
 }

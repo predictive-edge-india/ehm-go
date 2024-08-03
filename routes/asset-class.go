@@ -2,13 +2,13 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	assetClassHandlers "github.com/predictive-edge-india/ehm-go/handlers/assetClass"
+	assetClassHandlers "github.com/predictive-edge-india/ehm-go/handlers/assetClasses"
 	"github.com/predictive-edge-india/ehm-go/middlewares"
 )
 
 func AssetClassRoutes(app fiber.Router) {
-	assets := app.Group("/asset-classes")
-	assets.Delete("/:assetClassId", middlewares.Protected(), assetClassHandlers.DeleteAssetClass)
-	assets.Get("/", middlewares.Protected(), assetClassHandlers.FetchAssetClasses)
-	assets.Post("/", middlewares.Protected(), assetClassHandlers.CreateNewAssetClass)
+	group := app.Group("/asset-classes")
+	group.Delete("/:assetClassId", middlewares.Protected(), assetClassHandlers.DeleteAssetClass)
+	group.Get("/", middlewares.Protected(), assetClassHandlers.FetchAssetClasses)
+	group.Post("/", middlewares.Protected(), assetClassHandlers.CreateNewAssetClass)
 }
