@@ -24,10 +24,38 @@ type Customer struct {
 
 func (u Customer) Json() map[string]interface{} {
 	payload := map[string]interface{}{
+		"id":         u.Id,
+		"name":       u.Name,
+		"position":   u.Position,
+		"address1":   u.Address1,
+		"city":       u.City,
+		"state":      u.State,
+		"country":    u.Country,
+		"postalCode": u.PostalCode,
+		"createdAt":  u.CreatedAt,
+	}
+	if u.LogoUrl.Valid {
+		payload["logoUrl"] = u.LogoUrl.String
+	}
+	if u.Address2.Valid {
+		payload["address2"] = u.Address2.String
+	}
+
+	return payload
+}
+
+func (u Customer) ShortJson() map[string]interface{} {
+	payload := map[string]interface{}{
 		"id":        u.Id,
 		"name":      u.Name,
 		"createdAt": u.CreatedAt,
 	}
-
+	if u.LogoUrl.Valid {
+		payload["logoUrl"] = u.LogoUrl.String
+	}
 	return payload
+}
+
+func (u Customer) IsIdNull() bool {
+	return u.Id.String() == uuid.Nil.String()
 }

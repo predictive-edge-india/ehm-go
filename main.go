@@ -18,6 +18,7 @@ import (
 	"github.com/predictive-edge-india/ehm-go/managers"
 	"github.com/predictive-edge-india/ehm-go/models"
 	"github.com/predictive-edge-india/ehm-go/routes"
+	authRoutes "github.com/predictive-edge-india/ehm-go/routes/auth"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -44,8 +45,8 @@ func HandleErrors(ctx *fiber.Ctx, err error) error {
 	message := "Internal Server Error"
 
 	var e *fiber.Error
+	log.Error().AnErr("Fiber error", err).Send()
 	if errors.As(err, &e) {
-		log.Error().AnErr("Fiber error", e).Send()
 		code = e.Code
 		message = e.Message
 	}
@@ -64,6 +65,10 @@ func HandleErrors(ctx *fiber.Ctx, err error) error {
 
 func loadRoutes() {
 	v1 := app.Group("/v1")
+	authRoutes.AuthRoutes(v1)
+
+	routes.CustomerRoutes(v1)
+	routes.UserRoutes(v1)
 
 	routes.EhmDeviceRoutes(v1)
 	routes.ParameterRoutes(v1)
