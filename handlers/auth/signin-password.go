@@ -38,6 +38,9 @@ func SigninWithPassword(c *fiber.Ctx) error {
 	user, err := database.FindUserByEmail(jsonBody.Email)
 	if err != nil {
 		log.Error().AnErr("SigninWithPassword: FindUserByEmail", err).Send()
+		if err.Error() == "record not found" {
+			return helpers.BadRequestError(c, "Email/password is incorrect!")
+		}
 		return helpers.BadRequestError(c, err.Error())
 	}
 

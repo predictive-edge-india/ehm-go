@@ -33,10 +33,12 @@ func FindUserAuth(ctx *fiber.Ctx) models.User {
 
 func FindUserByEmail(email string) (models.User, error) {
 	var user models.User
-	Database.Where("email=?", email).First(&user)
+	if err := Database.Where("email=?", email).First(&user).Error; err != nil {
+		return user, err
+	}
 
 	if user.IsIdNull() {
-		return user, errors.New("no user found")
+		return user, errors.New("record not found")
 	}
 	return user, nil
 }
