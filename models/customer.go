@@ -19,7 +19,7 @@ type Customer struct {
 	City       string         `gorm:"column:city" json:"city"`
 	State      string         `gorm:"column:state" json:"state"`
 	Country    string         `gorm:"column:country" json:"country"`
-	PostalCode string         `gorm:"column:postal_code" json:"postalCode"`
+	PostalCode int32          `gorm:"column:postal_code" json:"postalCode"`
 }
 
 func (u Customer) Json() map[string]interface{} {

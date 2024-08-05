@@ -13,7 +13,7 @@ func SeedUser(db *gorm.DB) (*models.User, error) {
 	newUser := new(models.User)
 	if err := db.First(&models.User{}).Scan(&newUser).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		newUser.Name = "Raunak Kamat"
-		newUser.Email = "raunak@predictiveedge.com"
+		newUser.Email = "raunak@predictiveedge.co.in"
 		newUser.Phone = sql.NullString{
 			Valid:  true,
 			String: "+919011014293",
@@ -57,7 +57,7 @@ func SeedCustomer(db *gorm.DB) (*models.Customer, error) {
 		newCustomer.City = "Mumbai"
 		newCustomer.State = "Maharashtra"
 		newCustomer.Country = "India"
-		newCustomer.PostalCode = "400001"
+		newCustomer.PostalCode = 400001
 
 		err = db.Create(&newCustomer).Error
 		if err != nil {

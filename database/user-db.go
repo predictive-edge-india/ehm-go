@@ -9,6 +9,7 @@ import (
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
 	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
 )
 
 func FindUserById(id uuid.UUID) models.User {
@@ -71,10 +72,16 @@ func FindUserRoleForUser(ctx *fiber.Ctx, user models.User) (models.UserRole, err
 
 func FindUserRoleForCustomerUser(ctx *fiber.Ctx, user models.User, customer models.Customer) (models.UserRole, error) {
 	var userRole models.UserRole
-	Database.First(&userRole, "customer_id = ? AND user_id = ?", customer.Id.String(), user.Id.String())
+	err := Database.First(&userRole, "customer_id = ? AND user_id = ?", customer.Id.String(), user.Id.String()).Error
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return userRole, err
+	}
 
 	if userRole.Id.String() == uuid.Nil.String() {
-		Database.First(&userRole, "access_type = ? AND user_id = ?", models.UserRoleEnum.SuperAdministrator.Number, user.Id.String())
+		err := Database.First(&userRole, "access_type = ? AND user_id = ?", models.UserRoleEnum.SuperAdministrator.Number, user.Id.String()).Error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return userRole, err
+		}
 	}
 
 	if userRole.Id.String() == uuid.Nil.String() {

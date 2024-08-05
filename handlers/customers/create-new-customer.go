@@ -14,8 +14,8 @@ import (
 func CreateNewCustomer(c *fiber.Ctx) error {
 	user := database.FindUserAuth(c)
 
-	currentCustomer, _, err := database.FindCurrentUserCustomer(c, user)
-	if err != nil {
+	currentCustomer, requestCustomer, err := database.FindCurrentUserCustomer(c, user)
+	if err != nil && requestCustomer {
 		return err
 	}
 
@@ -41,7 +41,7 @@ func validateCustomerBody(c *fiber.Ctx) error {
 		City       string         `json:"city" validate:"required"`
 		State      string         `json:"state" validate:"required"`
 		Country    string         `json:"country" validate:"required"`
-		PostalCode string         `json:"postalCode" validate:"required"`
+		PostalCode int32          `json:"postalCode" validate:"required"`
 	}{}
 
 	// Validation
@@ -68,11 +68,13 @@ func validateCustomerBody(c *fiber.Ctx) error {
 		PostalCode: jsonBody.PostalCode,
 	}
 
+	log.Info().Any("dksndks", newCustomer).Send()
 	if err := database.Database.Create(&newCustomer).Error; err != nil {
 		log.Error().AnErr("CreateNewCustomer: Database", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
 
+	log.Info().Msg("dksndks")
 	payload := fiber.Map{
 		"customer": newCustomer.Json(),
 	}
