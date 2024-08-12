@@ -13,6 +13,8 @@ type Customer struct {
 	Name     string         `gorm:"column:name" json:"name"`
 	LogoUrl  sql.NullString `gorm:"column:logo_url" json:"logoUrl"`
 	Position GeoJson        `gorm:"column:position;" json:"position"`
+	Email    string         `gorm:"column:email;" json:"email"`
+	Phone    string         `gorm:"column:phone;" json:"phone"`
 
 	Address1   string         `gorm:"column:address_1" json:"address1"`
 	Address2   sql.NullString `gorm:"column:address_2" json:"address2"`
@@ -20,6 +22,8 @@ type Customer struct {
 	State      string         `gorm:"column:state" json:"state"`
 	Country    string         `gorm:"column:country" json:"country"`
 	PostalCode int32          `gorm:"column:postal_code" json:"postalCode"`
+
+	Gstin sql.NullString `gorm:"column:gstin" json:"gstin"`
 }
 
 func (u Customer) Json() map[string]interface{} {
@@ -27,6 +31,8 @@ func (u Customer) Json() map[string]interface{} {
 		"id":         u.Id,
 		"name":       u.Name,
 		"position":   u.Position,
+		"email":      u.Email,
+		"phone":      u.Phone,
 		"address1":   u.Address1,
 		"city":       u.City,
 		"state":      u.State,
@@ -39,6 +45,9 @@ func (u Customer) Json() map[string]interface{} {
 	}
 	if u.Address2.Valid {
 		payload["address2"] = u.Address2.String
+	}
+	if u.Gstin.Valid {
+		payload["gstin"] = u.Gstin.String
 	}
 
 	return payload
