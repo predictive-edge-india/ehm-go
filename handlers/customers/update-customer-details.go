@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func CreateNewCustomer(c *fiber.Ctx) error {
+func UpdateCustomerDetails(c *fiber.Ctx) error {
 	user := database.FindUserAuth(c)
 
 	currentCustomer, requestCustomer, err := database.FindCurrentUserCustomer(c, user)
@@ -25,44 +25,42 @@ func CreateNewCustomer(c *fiber.Ctx) error {
 	}
 
 	if userRole.AccessType == models.UserRoleEnum.SuperAdministrator.Number {
-		return validateCustomerBody(c)
+		return validateCustomerUpdateBody(c)
 	}
 
 	return helpers.NotAuthorizedError(c, "You're not authorized!")
 }
 
-func validateCustomerBody(c *fiber.Ctx) error {
+func validateCustomerUpdateBody(c *fiber.Ctx) error {
 	jsonBody := struct {
-		Name       string         `json:"name" validate:"required"`
-		Phone      string         `json:"phone" validate:"required"`
-		Email      string         `json:"email" validate:"required,email"`
+		Name       string         `json:"name"`
+		Email      string         `json:"email" validate:"email"`
+		Phone      string         `json:"phone"`
 		LogoUrl    string         `json:"logoUrl"`
-		Position   models.GeoJson `json:"position" validate:"required"`
-		Address1   string         `json:"address1" validate:"required"`
+		Position   models.GeoJson `json:"position"`
+		Address1   string         `json:"address1"`
 		Address2   string         `json:"address2"`
-		City       string         `json:"city" validate:"required"`
-		State      string         `json:"state" validate:"required"`
-		Country    string         `json:"country" validate:"required"`
-		PostalCode int32          `json:"postalCode" validate:"required"`
+		City       string         `json:"city"`
+		State      string         `json:"state"`
+		Country    string         `json:"country"`
+		PostalCode int32          `json:"postalCode"`
 		Gstin      string         `json:"gstin"`
 	}{}
 
 	// Validation
 	if err := c.BodyParser(&jsonBody); err != nil {
-		log.Error().AnErr("CreateNewCustomer: Bodyparser", err).Send()
+		log.Error().AnErr("UpdateCustomer: Bodyparser", err).Send()
 		return helpers.BadRequestError(c, "Error parsing body!")
 	}
 
 	validate := validator.New()
 	if err := validate.Struct(jsonBody); err != nil {
-		log.Error().AnErr("CreateNewCustomer: Validator", err).Send()
+		log.Error().AnErr("UpdateCustomer: Validator", err).Send()
 		return helpers.BadRequestError(c, "Please check your request!")
 	}
 
 	newCustomer := models.Customer{
 		Name:       jsonBody.Name,
-		Phone:      jsonBody.Phone,
-		Email:      jsonBody.Email,
 		LogoUrl:    sql.NullString{String: jsonBody.LogoUrl, Valid: jsonBody.LogoUrl != ""},
 		Position:   jsonBody.Position,
 		Address1:   jsonBody.Address1,
@@ -71,14 +69,10 @@ func validateCustomerBody(c *fiber.Ctx) error {
 		State:      jsonBody.State,
 		Country:    jsonBody.Country,
 		PostalCode: jsonBody.PostalCode,
-		Gstin: sql.NullString{
-			String: jsonBody.Gstin,
-			Valid:  jsonBody.Gstin != "",
-		},
 	}
 
 	if err := database.Database.Create(&newCustomer).Error; err != nil {
-		log.Error().AnErr("CreateNewCustomer: Database", err).Send()
+		log.Error().AnErr("UpdateCustomer: Database", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
 
