@@ -8,6 +8,7 @@ import (
 
 func AssetClassRoutes(app fiber.Router) {
 	group := app.Group("/asset-classes")
+	group.Get("/:assetClassId", middlewares.Protected(), assetClassHandlers.FetchAssetClassDetails)
 	group.Delete("/:assetClassId", middlewares.Protected(), assetClassHandlers.DeleteAssetClass)
 	group.Get("/", middlewares.Protected(), assetClassHandlers.FetchAssetClasses)
 	group.Post("/", middlewares.Protected(), assetClassHandlers.CreateNewAssetClass)

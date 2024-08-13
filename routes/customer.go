@@ -8,6 +8,7 @@ import (
 
 func CustomerRoutes(app fiber.Router) {
 	group := app.Group("/customers")
+	group.Get("/:customerId/stats", middlewares.Protected(), customerHandlers.FetchCustomerStats)
 	group.Get("/:customerId", middlewares.Protected(), customerHandlers.FetchCustomerDetails)
 	group.Patch("/:customerId", middlewares.Protected(), customerHandlers.UpdateCustomerDetails)
 	group.Get("/", middlewares.Protected(), customerHandlers.FetchAllCustomers)
