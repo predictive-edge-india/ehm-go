@@ -6,6 +6,7 @@ import (
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
+	"gorm.io/gorm"
 )
 
 func FetchAssetDetails(c *fiber.Ctx) error {
@@ -28,7 +29,12 @@ func FetchAssetDetails(c *fiber.Ctx) error {
 
 	var asset models.Asset
 	err = database.Database.
-		Where("id = ?", assetId).Find(&asset).Error
+		Preload("AssetClass").
+		Preload("Customer", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name")
+		}).
+		Where("id = ?", assetId).
+		Find(&asset).Error
 	if err != nil {
 		return helpers.BadRequestError(c, "There was an error fetching asset.")
 	}

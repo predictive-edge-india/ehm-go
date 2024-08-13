@@ -50,9 +50,26 @@ func validateAssetBody(c *fiber.Ctx) error {
 		return helpers.BadRequestError(c, "Invalid Customer UUID!")
 	}
 
+	customer := database.FindCustomerById(customerId)
+	if customer.IsIdNull() {
+		return helpers.ResourceNotFoundError(c, "Customer")
+	}
+
+	assetClassId, err := uuid.Parse(jsonBody.AssetClass)
+	if err != nil {
+		log.Error().AnErr("CreateNewAsset: UUID parsing", err).Send()
+		return helpers.BadRequestError(c, "Invalid Asset Class UUID!")
+	}
+
+	assetClass := database.FindAssetClassById(assetClassId)
+	if assetClass.IsIdNull() {
+		return helpers.ResourceNotFoundError(c, "Asset Class")
+	}
+
 	newAsset := models.Asset{
-		Name:       jsonBody.Name,
-		CustomerId: &customerId,
+		Name:         jsonBody.Name,
+		CustomerId:   &customerId,
+		AssetClassId: &assetClassId,
 	}
 
 	if err := database.Database.Create(&newAsset).Error; err != nil {

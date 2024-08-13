@@ -23,6 +23,19 @@ func (u Asset) Json() map[string]interface{} {
 		"name":      u.Name,
 		"createdAt": u.CreatedAt,
 	}
+
+	if u.AssetClassId != nil {
+		payload["assetClass"] = map[string]interface{}{
+			"id":   u.AssetClass.Id,
+			"name": u.AssetClass.Name,
+		}
+	}
+	if u.CustomerId != nil {
+		payload["customer"] = map[string]interface{}{
+			"id":   u.Customer.Id,
+			"name": u.Customer.Name,
+		}
+	}
 	return payload
 }
 
