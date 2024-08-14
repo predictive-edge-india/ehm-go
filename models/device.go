@@ -42,6 +42,10 @@ func (u Device) Json() map[string]interface{} {
 		payload["note"] = u.Note.String
 	}
 
+	if u.DeviceTypeId != uuid.Nil {
+		payload["deviceType"] = u.DeviceType.ShortJson()
+	}
+
 	return payload
 }
 
