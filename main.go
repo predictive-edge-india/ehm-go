@@ -67,6 +67,7 @@ func loadRoutes() {
 	v1 := app.Group("/v1")
 	authRoutes.AuthRoutes(v1)
 
+	routes.DashboardRoutes(v1)
 	routes.CustomerRoutes(v1)
 	routes.UserRoutes(v1)
 	routes.AssetClassRoutes(v1)
