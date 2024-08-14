@@ -16,8 +16,9 @@ import (
 func CreateNewUser(c *fiber.Ctx) error {
 	user := database.FindUserAuth(c)
 
-	currentCustomer, _, err := database.FindCurrentUserCustomer(c, user)
-	if err != nil {
+	log.Info().Any("user", user).Send()
+	currentCustomer, customerRequest, err := database.FindCurrentUserCustomer(c, user)
+	if err != nil && customerRequest {
 		return err
 	}
 
@@ -96,6 +97,12 @@ func validateBody(c *fiber.Ctx) error {
 	userRole.UserId = newCustomer.Id
 
 	if err := transaction.Create(&userRole).Error; err != nil {
+		log.Error().AnErr("CreateNewUser: Database", err).Send()
+		return helpers.BadRequestError(c, "There was an error!")
+	}
+
+	err = transaction.Commit().Error
+	if err != nil {
 		log.Error().AnErr("CreateNewUser: Database", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
