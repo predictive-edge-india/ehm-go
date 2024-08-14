@@ -20,6 +20,7 @@ func FetchAssets(c *fiber.Ctx) error {
 
 	searchQuery := strings.Trim(c.Query("q"), " ")
 	assetClassId := strings.Trim(c.Query("asset_class"), " ")
+	customerId := strings.Trim(c.Query("customer"), " ")
 
 	var assets []models.Asset
 
@@ -35,6 +36,10 @@ func FetchAssets(c *fiber.Ctx) error {
 
 	if len(assetClassId) > 0 {
 		query = query.Where("asset_class_id = ?", assetClassId)
+	}
+
+	if len(customerId) > 0 {
+		query = query.Where("customer_id = ?", customerId)
 	}
 
 	err = query.

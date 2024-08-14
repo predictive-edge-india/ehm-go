@@ -19,6 +19,8 @@ func FetchDevices(c *fiber.Ctx) error {
 	}
 
 	searchQuery := strings.Trim(c.Query("q"), " ")
+	deviceTypeId := strings.Trim(c.Query("device_type"), " ")
+	// customerId := strings.Trim(c.Query("customer"), " ")
 
 	var devices []models.Device
 
@@ -27,6 +29,11 @@ func FetchDevices(c *fiber.Ctx) error {
 	if len(searchQuery) > 0 {
 		query = query.Where("name ILIKE ?", "%"+searchQuery+"%")
 	}
+
+	if len(deviceTypeId) > 0 {
+		query = query.Where("device_type_id = ?", deviceTypeId)
+	}
+
 	err = query.
 		Order("created_at desc").
 		Offset((page - 1) * perPage).
