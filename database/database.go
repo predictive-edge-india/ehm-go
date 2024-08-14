@@ -43,6 +43,7 @@ func Migrate(db *gorm.DB) {
 		&models.DeviceType{},
 		&models.Device{},
 		&models.AssetDevice{},
+		&models.AssetParameter{},
 	)
 	if err != nil {
 		log.Fatal().AnErr("Migrating DB", err).Send()
