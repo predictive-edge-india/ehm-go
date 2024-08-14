@@ -32,7 +32,6 @@ func FetchAssignAssetDeviceFormData(c *fiber.Ctx) error {
 	for _, unassignedDevice := range unassignedDevices {
 		unassignedDeviceJson = append(unassignedDeviceJson, fiber.Map{
 			"id":       unassignedDevice.Id,
-			"name":     unassignedDevice.Name,
 			"serialNo": unassignedDevice.SerialNo,
 		})
 	}

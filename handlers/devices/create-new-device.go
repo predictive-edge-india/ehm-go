@@ -1,6 +1,8 @@
 package deviceHandlers
 
 import (
+	"database/sql"
+
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -27,9 +29,16 @@ func CreateNewDevice(c *fiber.Ctx) error {
 
 func validateDeviceBody(c *fiber.Ctx) error {
 	jsonBody := struct {
-		Name       string `json:"name" validate:"required"`
-		SerialNo   string `json:"serialNo" validate:"required"`
-		Asset      string `json:"asset" validate:"required,uuid4,required"`
+		SerialNo string `json:"serialNo" validate:"required"`
+
+		Imei1  string `json:"imei1" validate:"required"`
+		Phone1 string `json:"phone1" validate:"required"`
+
+		Imei2  string `json:"imei2"`
+		Phone2 string `json:"phone2"`
+
+		Note string `json:"note"`
+
 		DeviceType string `json:"deviceType" validate:"required,uuid4,required"`
 	}{}
 
@@ -45,12 +54,6 @@ func validateDeviceBody(c *fiber.Ctx) error {
 		return helpers.BadRequestError(c, "Please check your request!")
 	}
 
-	assetId, err := uuid.Parse(jsonBody.Asset)
-	if err != nil {
-		log.Error().AnErr("CreateNewDevice: UUID parsing", err).Send()
-		return helpers.BadRequestError(c, "Invalid Asset UUID!")
-	}
-
 	deviceTypeId, err := uuid.Parse(jsonBody.DeviceType)
 	if err != nil {
 		log.Error().AnErr("CreateNewDevice: UUID parsing", err).Send()
@@ -58,25 +61,31 @@ func validateDeviceBody(c *fiber.Ctx) error {
 	}
 
 	newDevice := models.Device{
-		Name:         jsonBody.Name,
 		SerialNo:     jsonBody.SerialNo,
 		DeviceTypeId: deviceTypeId,
+
+		Imei1:  jsonBody.Imei1,
+		Phone1: jsonBody.Phone1,
+
+		Imei2: sql.NullString{
+			String: jsonBody.Imei2,
+			Valid:  jsonBody.Imei2 != "",
+		},
+		Phone2: sql.NullString{
+			String: jsonBody.Phone2,
+			Valid:  jsonBody.Phone2 != "",
+		},
+
+		Note: sql.NullString{
+			String: jsonBody.Note,
+			Valid:  jsonBody.Note != "",
+		},
 	}
 
 	transaction := database.Database.Begin()
 
 	if err := transaction.Create(&newDevice).Error; err != nil {
 		log.Error().AnErr("CreateNewDevice: create device", err).Send()
-		return helpers.BadRequestError(c, "There was an error!")
-	}
-
-	assetDevice := models.AssetDevice{
-		AssetId:  assetId,
-		DeviceId: newDevice.Id,
-	}
-
-	if err := transaction.Create(&assetDevice).Error; err != nil {
-		log.Error().AnErr("CreateNewDevice: create asset device", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
 

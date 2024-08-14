@@ -39,7 +39,6 @@ func FetchAssetDevices(c *fiber.Ctx) error {
 	for _, assetDevice := range assetDevices {
 		deviceJson = append(deviceJson, fiber.Map{
 			"id":       assetDevice.Device.Id,
-			"name":     assetDevice.Device.Name,
 			"serialNo": assetDevice.Device.SerialNo,
 		})
 	}
