@@ -38,8 +38,6 @@ func FetchCustomerStats(c *fiber.Ctx) error {
 		Joins("JOIN assets ON assets.id = asset_devices.asset_id").
 		Where("assets.customer_id = ?", customerId).
 		Count(&deviceCount).Error
-
-	// .Model(&models.Device{}).Where("customer_id = ?", customerId).Count(&deviceCount).Error
 	if err != nil {
 		return helpers.BadRequestError(c, "There was an error fetching customer device count.")
 	}

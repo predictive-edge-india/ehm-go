@@ -8,6 +8,9 @@ import (
 
 func UserRoutes(app fiber.Router) {
 	users := app.Group("/users")
+	users.Get("/formdata", middlewares.Protected(), userHandlers.FetchUserFormData)
+	users.Get("/:userId", middlewares.Protected(), userHandlers.FetchUserDetails)
+	users.Delete("/:userId", middlewares.Protected(), userHandlers.DeleteUser)
 	users.Get("/", middlewares.Protected(), userHandlers.FetchUsers)
 	users.Post("/", middlewares.Protected(), userHandlers.CreateNewUser)
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
@@ -38,6 +39,8 @@ func validateBody(c *fiber.Ctx) error {
 		Email    string `json:"email" validate:"required,email"`
 		Phone    string `json:"phone"`
 		Password string `json:"password" validate:"required,min=6"`
+		Role     int16  `json:"role" validate:"required"`
+		Customer string `json:"customer" validate:"omitempty,uuid4"`
 	}{}
 
 	// Validation
@@ -58,6 +61,25 @@ func validateBody(c *fiber.Ctx) error {
 		return helpers.BadRequestError(c, "There was an error!")
 	}
 
+	userRole := models.UserRole{
+		AccessType: jsonBody.Role,
+	}
+
+	if jsonBody.Role != models.UserRoleEnum.SuperAdministrator.Number {
+		customerId, err := uuid.Parse(jsonBody.Customer)
+		if err != nil {
+			log.Error().AnErr("CreateNewUser: UUID parsing", err).Send()
+			return helpers.BadRequestError(c, "Invalid Customer UUID!")
+		}
+
+		customer := database.FindCustomerById(customerId)
+		if customer.IsIdNull() {
+			return helpers.ResourceNotFoundError(c, "Customer")
+		}
+
+		userRole.CustomerId = &customerId
+	}
+
 	newCustomer := models.User{
 		Name:         jsonBody.Name,
 		Email:        jsonBody.Email,
@@ -65,7 +87,15 @@ func validateBody(c *fiber.Ctx) error {
 		PasswordHash: string(hashedPassword),
 	}
 
-	if err := database.Database.Create(&newCustomer).Error; err != nil {
+	transaction := database.Database.Begin()
+	if err := transaction.Create(&newCustomer).Error; err != nil {
+		log.Error().AnErr("CreateNewUser: Database", err).Send()
+		return helpers.BadRequestError(c, "There was an error!")
+	}
+
+	userRole.UserId = newCustomer.Id
+
+	if err := transaction.Create(&userRole).Error; err != nil {
 		log.Error().AnErr("CreateNewUser: Database", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
