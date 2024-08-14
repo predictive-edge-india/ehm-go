@@ -19,6 +19,7 @@ func FetchAssets(c *fiber.Ctx) error {
 	}
 
 	searchQuery := strings.Trim(c.Query("q"), " ")
+	assetClassId := strings.Trim(c.Query("asset_class"), " ")
 
 	var assets []models.Asset
 
@@ -31,6 +32,11 @@ func FetchAssets(c *fiber.Ctx) error {
 	if len(searchQuery) > 0 {
 		query = query.Where("name ILIKE ?", "%"+searchQuery+"%")
 	}
+
+	if len(assetClassId) > 0 {
+		query = query.Where("asset_class_id = ?", assetClassId)
+	}
+
 	err = query.
 		Order("created_at desc").
 		Offset((page - 1) * perPage).
