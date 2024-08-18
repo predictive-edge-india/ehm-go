@@ -2,50 +2,23 @@ package helpers
 
 import (
 	"regexp"
+	"strings"
 )
 
-func GetTopicType(topic string) int32 {
+func GetTopicType(topic string) (string, int16) {
 	// current topic
-	pattern := `^iisc/ehm/.*\/(i1|i2|i3|v1|x)/(rms|fft)$`
+	pattern := `^iisc/ehm/.*\/gps$`
+	splitTopic := strings.Split(topic, "/")
+
+	deviceId := splitTopic[2]
+	if len(splitTopic) > 3 && splitTopic[0] == "iisc" && splitTopic[1] == "ehm" {
+		deviceId = splitTopic[2]
+	}
+
 	regex := regexp.MustCompile(pattern)
 	if regex.MatchString(topic) {
-		return 1
+		return deviceId, 1
 	}
 
-	// fuel percentage topic
-	pattern = `^iisc\/ehm\/\d+\/fuel_p$`
-	regex = regexp.MustCompile(pattern)
-	if regex.MatchString(topic) {
-		return 2
-	}
-
-	// fault topic
-	pattern = `^iisc\/ehm\/\d+\/faults$`
-	regex = regexp.MustCompile(pattern)
-	if regex.MatchString(topic) {
-		return 3
-	}
-
-	// power param topic
-	pattern = `^iisc\/ehm\/\d+\/power$`
-	regex = regexp.MustCompile(pattern)
-	if regex.MatchString(topic) {
-		return 4
-	}
-
-	// engine param topic
-	pattern = `^iisc\/ehm\/\d+\/engine$`
-	regex = regexp.MustCompile(pattern)
-	if regex.MatchString(topic) {
-		return 5
-	}
-
-	// temperature param topic
-	pattern = `^iisc\/ehm\/\d+\/ntc$`
-	regex = regexp.MustCompile(pattern)
-	if regex.MatchString(topic) {
-		return 6
-	}
-
-	return -1
+	return deviceId, -1
 }

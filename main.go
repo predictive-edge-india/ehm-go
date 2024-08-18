@@ -77,9 +77,6 @@ func loadRoutes() {
 	routes.ProfileRoutes(v1)
 	routes.ProfileRoutes(v1)
 	routes.AssetParameterRoutes(v1)
-
-	routes.EhmDeviceRoutes(v1)
-	routes.ParameterRoutes(v1)
 }
 
 func main() {

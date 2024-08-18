@@ -20,3 +20,9 @@ func FindUnassignedDeviceById(id uuid.UUID) models.Device {
 		Find(&device)
 	return device
 }
+
+func FindDeviceBySerialNo(serialNo string) models.Device {
+	var device models.Device
+	Database.Where("serial_no = ?", serialNo).Find(&device)
+	return device
+}
