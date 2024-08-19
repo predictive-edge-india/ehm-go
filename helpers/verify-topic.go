@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func GetTopicType(topic string) (string, int16) {
+func GetTopicType(topic string) (string, int8) {
 	// current topic
 	splitTopic := strings.Split(topic, "/")
 
@@ -26,7 +26,7 @@ func GetTopicType(topic string) (string, int16) {
 		return deviceId, 2
 	}
 
-	pattern = `^iisc/ehm/.*\/alarm$`
+	pattern = `^iisc/ehm/.*\/alarms$`
 	regex = regexp.MustCompile(pattern)
 	if regex.MatchString(topic) {
 		return deviceId, 3

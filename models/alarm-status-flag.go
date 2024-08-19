@@ -4,14 +4,13 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
 type AlarmStatusFlag struct {
 	gorm.Model
-	Id       uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
-	Statuses pq.Float32Array `gorm:"column:statuses;type:float[]" json:"statuses"`
+	Id       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
+	Statuses []uint8   `gorm:"column:statuses" json:"statuses"`
 
 	DeviceId uuid.UUID `gorm:"column:device_id" json:"deviceId"`
 	Device   Device    `gorm:"foreignKey:DeviceId"`
@@ -22,5 +21,5 @@ func (AlarmStatusFlag) TableName() string {
 }
 
 func (flag *AlarmStatusFlag) MqttPayload() string {
-	return fmt.Sprintf("%f", flag.Statuses)
+	return fmt.Sprintf("%d", flag.Statuses)
 }
