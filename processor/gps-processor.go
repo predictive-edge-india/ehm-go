@@ -13,11 +13,13 @@ import (
 func ProcessGps(client MQTT.Client, deviceId, message string) {
 	device := database.FindDeviceBySerialNo(deviceId)
 	if device.IsIdNull() {
+		log.Error().Str("deviceId", deviceId).Send()
 		return
 	}
 
 	gpsSplitStr := strings.Split(message, ",")
 	if len(gpsSplitStr) != 2 {
+		log.Error().Str("deviceId", deviceId).Str("message", message).Send()
 		return
 	}
 

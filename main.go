@@ -36,7 +36,7 @@ var (
 )
 
 var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
-	log.Printf("%s: %s\n", msg.Topic(), msg.Payload())
+	log.Info().Str("Payload", string(msg.Payload())).Str("Topic", msg.Topic()).Send()
 	managers.ProcessPacket(client, msg.Topic(), string(msg.Payload()))
 }
 

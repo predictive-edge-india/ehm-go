@@ -8,6 +8,7 @@ import (
 
 func AssetParameterRoutes(app fiber.Router) {
 	group := app.Group("/asset-parameters")
+	group.Delete("/:assetParameterId", middlewares.Protected(), assetParameterHandlers.DeleteAssetParameter)
 	group.Post("/", middlewares.Protected(), assetParameterHandlers.CreateNewAssetParameter)
 	group.Get("/", middlewares.Protected(), assetParameterHandlers.FetchAssetParameters)
 }

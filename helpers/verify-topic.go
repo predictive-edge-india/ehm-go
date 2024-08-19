@@ -7,7 +7,6 @@ import (
 
 func GetTopicType(topic string) (string, int16) {
 	// current topic
-	pattern := `^iisc/ehm/.*\/gps$`
 	splitTopic := strings.Split(topic, "/")
 
 	deviceId := splitTopic[2]
@@ -15,9 +14,40 @@ func GetTopicType(topic string) (string, int16) {
 		deviceId = splitTopic[2]
 	}
 
+	pattern := `^iisc/ehm/.*\/gps$`
 	regex := regexp.MustCompile(pattern)
 	if regex.MatchString(topic) {
 		return deviceId, 1
+	}
+
+	pattern = `^iisc/ehm/.*\/power$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return deviceId, 2
+	}
+
+	pattern = `^iisc/ehm/.*\/alarm$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return deviceId, 3
+	}
+
+	pattern = `^iisc/ehm/.*\/dgStatus$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return deviceId, 4
+	}
+
+	pattern = `^iisc/ehm/.*\/e483Can$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return deviceId, 5
+	}
+
+	pattern = `^iisc/ehm/.*\/deviceTime$`
+	regex = regexp.MustCompile(pattern)
+	if regex.MatchString(topic) {
+		return deviceId, 6
 	}
 
 	return deviceId, -1

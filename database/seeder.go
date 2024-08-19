@@ -41,6 +41,8 @@ func SeedCustomer(db *gorm.DB) (*models.Customer, error) {
 	newCustomer := new(models.Customer)
 	if err := db.Select("id, name").First(&models.Customer{}).Scan(&newCustomer).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		newCustomer.Name = "Pai Kane Group"
+		newCustomer.Phone = "+919637078081"
+		newCustomer.Email = "paikane@gmail.com"
 		newCustomer.LogoUrl = sql.NullString{
 			Valid:  true,
 			String: "https://i.pravatar.cc/150?img=10",

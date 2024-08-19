@@ -1,6 +1,8 @@
 package assetHandlers
 
 import (
+	"database/sql"
+
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -27,7 +29,9 @@ func CreateNewAsset(c *fiber.Ctx) error {
 
 func validateAssetBody(c *fiber.Ctx) error {
 	jsonBody := struct {
-		Name       string `json:"name" validate:"required"`
+		Make       string `json:"make" validate:"required"`
+		Model      string `json:"model" validate:"required"`
+		Name       string `json:"name"`
 		Customer   string `json:"customer" validate:"required,uuid4"`
 		AssetClass string `json:"assetClass" validate:"required,uuid4"`
 	}{}
@@ -67,7 +71,9 @@ func validateAssetBody(c *fiber.Ctx) error {
 	}
 
 	newAsset := models.Asset{
-		Name:         jsonBody.Name,
+		Make:         jsonBody.Make,
+		ModelName:    jsonBody.Model,
+		Name:         sql.NullString{String: jsonBody.Name, Valid: len(jsonBody.Name) > 0},
 		CustomerId:   &customerId,
 		AssetClassId: &assetClassId,
 	}

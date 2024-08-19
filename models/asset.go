@@ -1,14 +1,19 @@
 package models
 
 import (
+	"database/sql"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Asset struct {
 	gorm.Model
-	Id   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
-	Name string    `gorm:"column:name" json:"name"`
+	Id   uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
+	Name sql.NullString `gorm:"column:name" json:"name"`
+
+	Make      string `gorm:"column:make" json:"make"`
+	ModelName string `gorm:"column:model" json:"model"`
 
 	AssetClassId *uuid.UUID `gorm:"column:asset_class_id" json:"assetClassId"`
 	AssetClass   AssetClass `gorm:"foreignKey:AssetClassId"`
@@ -20,8 +25,13 @@ type Asset struct {
 func (u Asset) Json() map[string]interface{} {
 	payload := map[string]interface{}{
 		"id":        u.Id,
-		"name":      u.Name,
+		"make":      u.Make,
+		"model":     u.Model,
 		"createdAt": u.CreatedAt,
+	}
+
+	if u.Name.Valid {
+		payload["name"] = u.Name.String
 	}
 
 	if u.AssetClassId != nil {
@@ -42,7 +52,8 @@ func (u Asset) Json() map[string]interface{} {
 func (u Asset) ShortJson() map[string]interface{} {
 	payload := map[string]interface{}{
 		"id":        u.Id,
-		"name":      u.Name,
+		"make":      u.Make,
+		"model":     u.Model,
 		"createdAt": u.CreatedAt,
 	}
 	return payload
