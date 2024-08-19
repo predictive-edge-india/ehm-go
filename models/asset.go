@@ -26,7 +26,7 @@ func (u Asset) Json() map[string]interface{} {
 	payload := map[string]interface{}{
 		"id":        u.Id,
 		"make":      u.Make,
-		"model":     u.Model,
+		"model":     u.ModelName,
 		"createdAt": u.CreatedAt,
 	}
 
@@ -53,7 +53,7 @@ func (u Asset) ShortJson() map[string]interface{} {
 	payload := map[string]interface{}{
 		"id":        u.Id,
 		"make":      u.Make,
-		"model":     u.Model,
+		"model":     u.ModelName,
 		"createdAt": u.CreatedAt,
 	}
 	return payload
