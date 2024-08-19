@@ -11,5 +11,7 @@ func ProcessPacket(client MQTT.Client, topic, message string) {
 	deviceId, topicType := helpers.GetTopicType(topic)
 	if topicType == 1 {
 		processor.ProcessGps(client, deviceId, message)
+	} else if topicType == 2 {
+		processor.ProcessAlarmStatus(client, deviceId, message)
 	}
 }

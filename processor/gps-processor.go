@@ -41,4 +41,6 @@ func ProcessGps(client MQTT.Client, deviceId, message string) {
 		log.Error().AnErr("ProcessGps: create deviceLastLocation", err).Send()
 		return
 	}
+
+	client.Publish("iisc/web/"+device.SerialNo+"/gps", 0, false, deviceLastLocation.MqttPayload())
 }
