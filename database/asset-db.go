@@ -10,3 +10,9 @@ func FindAssetById(id uuid.UUID) models.Asset {
 	Database.Where("id = ?", id).Find(&asset)
 	return asset
 }
+
+func FindAssetByIdWithAssetClass(id uuid.UUID) models.Asset {
+	var asset models.Asset
+	Database.Preload("AssetClass").Where("id = ?", id).Find(&asset)
+	return asset
+}

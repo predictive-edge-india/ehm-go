@@ -77,6 +77,7 @@ func loadRoutes() {
 	routes.ProfileRoutes(v1)
 	routes.ProfileRoutes(v1)
 	routes.AssetParameterRoutes(v1)
+	routes.AssetMonitoringRoutes(v1)
 }
 
 func main() {
