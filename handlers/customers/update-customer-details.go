@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/predictive-edge-india/ehm-go/database"
 	"github.com/predictive-edge-india/ehm-go/helpers"
 	"github.com/predictive-edge-india/ehm-go/models"
@@ -59,25 +60,50 @@ func validateCustomerUpdateBody(c *fiber.Ctx) error {
 		return helpers.BadRequestError(c, "Please check your request!")
 	}
 
-	newCustomer := models.Customer{
-		Name:       jsonBody.Name,
-		LogoUrl:    sql.NullString{String: jsonBody.LogoUrl, Valid: jsonBody.LogoUrl != ""},
-		Position:   jsonBody.Position,
-		Address1:   jsonBody.Address1,
-		Address2:   sql.NullString{String: jsonBody.Address2, Valid: jsonBody.Address2 != ""},
-		City:       jsonBody.City,
-		State:      jsonBody.State,
-		Country:    jsonBody.Country,
-		PostalCode: jsonBody.PostalCode,
+	customerIdStr := c.Params("customerId")
+	customerId, err := uuid.Parse(customerIdStr)
+	if err != nil {
+		return helpers.BadRequestError(c, "Invalid UUID!")
 	}
 
-	if err := database.Database.Create(&newCustomer).Error; err != nil {
+	customer := database.FindCustomerById(customerId)
+	if customer.IsIdNull() {
+		return helpers.ResourceNotFoundError(c, "Customer")
+	}
+
+	if jsonBody.Name != "" {
+		customer.Name = jsonBody.Name
+	}
+
+	if jsonBody.Email != "" {
+		customer.Email = jsonBody.Email
+	}
+
+	if jsonBody.Phone != "" {
+		customer.Phone = jsonBody.Phone
+	}
+
+	if jsonBody.LogoUrl != "" {
+		customer.LogoUrl = sql.NullString{String: jsonBody.LogoUrl, Valid: jsonBody.LogoUrl != ""}
+	}
+
+	// Name:       jsonBody.Name,
+	// LogoUrl:    sql.NullString{String: jsonBody.LogoUrl, Valid: jsonBody.LogoUrl != ""},
+	// Position:   jsonBody.Position,
+	// Address1:   jsonBody.Address1,
+	// Address2:   sql.NullString{String: jsonBody.Address2, Valid: jsonBody.Address2 != ""},
+	// City:       jsonBody.City,
+	// State:      jsonBody.State,
+	// Country:    jsonBody.Country,
+	// PostalCode: jsonBody.PostalCode,
+
+	if err := database.Database.Save(&customer).Error; err != nil {
 		log.Error().AnErr("UpdateCustomer: Database", err).Send()
 		return helpers.BadRequestError(c, "There was an error!")
 	}
 
 	payload := fiber.Map{
-		"customer": newCustomer.Json(),
+		"customer": customer.Json(),
 	}
 
 	return c.JSON(helpers.BuildResponse(payload))
