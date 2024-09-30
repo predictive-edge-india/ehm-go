@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -11,6 +12,7 @@ type DeviceLastLocation struct {
 	gorm.Model
 	Id       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()" json:"id"`
 	Position GeoJson   `gorm:"column:position;" json:"position"`
+	ReadAt   time.Time `gorm:"column:read_at" json:"readAt"`
 
 	DeviceId uuid.UUID `gorm:"column:device_id" json:"deviceId"`
 	Device   Device    `gorm:"foreignKey:DeviceId"`
@@ -24,6 +26,7 @@ func (u DeviceLastLocation) ShortJson() map[string]interface{} {
 	payload := map[string]interface{}{
 		"id":        u.Id,
 		"position":  u.Position,
+		"readAt":    u.ReadAt,
 		"createdAt": u.CreatedAt,
 	}
 	return payload

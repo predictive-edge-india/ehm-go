@@ -2,6 +2,7 @@ package processor
 
 import (
 	"strings"
+	"time"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/predictive-edge-india/ehm-go/database"
@@ -10,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func ProcessGps(client MQTT.Client, deviceId, message string) {
+func ProcessGps(client MQTT.Client, deviceId, message string, packetTime time.Time) {
 	device := database.FindDeviceBySerialNo(deviceId)
 	if device.IsIdNull() {
 		log.Error().Str("deviceId", deviceId).Send()
@@ -34,6 +35,7 @@ func ProcessGps(client MQTT.Client, deviceId, message string) {
 	deviceLastLocation := models.DeviceLastLocation{
 		DeviceId: device.Id,
 		Position: models.GeoJson{Type: "Point", Coordinates: []float64{gpsLng, gpsLat}},
+		ReadAt:   packetTime,
 	}
 
 	err := database.Database.Create(&deviceLastLocation).Error
