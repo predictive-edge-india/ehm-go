@@ -15,4 +15,5 @@ func AssetMonitoringRoutes(app fiber.Router) {
 	group.Get("/:assetId/dgstatus", middlewares.Protected(), assetMonitoringHandlers.FetchAssetDGStatus)
 	group.Get("/:assetId/last-location", middlewares.Protected(), assetMonitoringHandlers.FetchAssetLastLocation)
 	group.Get("/:assetId/power-data", middlewares.Protected(), assetMonitoringHandlers.FetchPowerData)
+	group.Get("/:assetId/load-imbalance", middlewares.Protected(), assetMonitoringHandlers.FetchAssetLoadImbalanceData)
 }
