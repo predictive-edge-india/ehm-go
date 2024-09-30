@@ -26,7 +26,7 @@ func ProcessGps(client MQTT.Client, deviceId, message string) {
 	gpsLat := helpers.ParseFloat64(gpsSplitStr[0])
 	gpsLng := helpers.ParseFloat64(gpsSplitStr[1])
 
-	if gpsLat == 0 && gpsLng == 0 {
+	if gpsLat <= 0 || gpsLng <= 0 {
 		log.Error().Str("deviceId", deviceId).Float64("gpsLat", gpsLat).Float64("gpsLng", gpsLng).Send()
 		return
 	}
