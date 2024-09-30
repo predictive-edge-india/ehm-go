@@ -1,6 +1,8 @@
 package assetHandlers
 
 import (
+	"database/sql"
+
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -27,11 +29,12 @@ func CreateNewAsset(c *fiber.Ctx) error {
 
 func validateAssetBody(c *fiber.Ctx) error {
 	jsonBody := struct {
-		Make       string `json:"make" validate:"required"`
-		Model      string `json:"model" validate:"required"`
-		Name       string `json:"name" validate:"required"`
-		Customer   string `json:"customer" validate:"required,uuid4"`
-		AssetClass string `json:"assetClass" validate:"required,uuid4"`
+		Make         string `json:"make" validate:"required"`
+		Model        string `json:"model" validate:"required"`
+		Name         string `json:"name" validate:"required"`
+		TankCapacity int32  `json:"tankCapacity" validate:"omitempty"`
+		Customer     string `json:"customer" validate:"required,uuid4"`
+		AssetClass   string `json:"assetClass" validate:"required,uuid4"`
 	}{}
 
 	// Validation
@@ -69,9 +72,13 @@ func validateAssetBody(c *fiber.Ctx) error {
 	}
 
 	newAsset := models.Asset{
-		Make:         jsonBody.Make,
-		ModelName:    jsonBody.Model,
-		Name:         jsonBody.Name,
+		Make:      jsonBody.Make,
+		ModelName: jsonBody.Model,
+		Name:      jsonBody.Name,
+		TankCapacity: sql.NullInt32{
+			Int32: jsonBody.TankCapacity,
+			Valid: jsonBody.TankCapacity > 0,
+		},
 		CustomerId:   &customerId,
 		AssetClassId: &assetClassId,
 	}

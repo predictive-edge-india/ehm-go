@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -12,6 +14,8 @@ type Asset struct {
 
 	Make      string `gorm:"column:make" json:"make"`
 	ModelName string `gorm:"column:model" json:"model"`
+
+	TankCapacity sql.NullInt32 `gorm:"column:tank_capacity" json:"tankCapacity"`
 
 	AssetClassId *uuid.UUID `gorm:"column:asset_class_id" json:"assetClassId"`
 	AssetClass   AssetClass `gorm:"foreignKey:AssetClassId"`
@@ -29,17 +33,21 @@ func (u Asset) Json() map[string]interface{} {
 		"createdAt": u.CreatedAt,
 	}
 
-	if u.AssetClassId != nil {
+	if !u.AssetClass.IsIdNull() {
 		payload["assetClass"] = map[string]interface{}{
 			"id":   u.AssetClass.Id,
 			"name": u.AssetClass.Name,
 		}
 	}
-	if u.CustomerId != nil {
+	if !u.Customer.IsIdNull() {
 		payload["customer"] = map[string]interface{}{
 			"id":   u.Customer.Id,
 			"name": u.Customer.Name,
 		}
+	}
+
+	if u.TankCapacity.Valid {
+		payload["tankCapacity"] = u.TankCapacity.Int32
 	}
 	return payload
 }
