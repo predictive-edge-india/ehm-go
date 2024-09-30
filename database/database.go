@@ -48,6 +48,7 @@ func Migrate(db *gorm.DB) {
 		&models.AlarmStatusFlag{},
 		&models.DGStatus{},
 		&models.PowerData{},
+		&models.E483CanData{},
 	)
 	if err != nil {
 		log.Fatal().AnErr("Migrating DB", err).Send()

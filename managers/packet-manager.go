@@ -29,5 +29,7 @@ func ProcessPacket(client MQTT.Client, topic, message string) {
 		processor.ProcessDGStatus(client, deviceId, message)
 	} else if topicType == 2 {
 		processor.ProcessPowerData(client, deviceId, message)
+	} else if topicType == 5 {
+		processor.ProcessE483Can(client, deviceId, message)
 	}
 }
