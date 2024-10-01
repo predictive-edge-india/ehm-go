@@ -13,7 +13,7 @@ import (
 func ProcessPacket(client MQTT.Client, topic, message string) {
 	deviceId, topicType := helpers.GetTopicType(topic)
 
-	packetTime, err := helpers.GetPayloadTime(message)
+	packetTime, payload, err := helpers.GetPayloadTime(message)
 	if err != nil {
 		log.Error().AnErr("ProcessPacket: GetPayloadTime", err).Send()
 		packetTime = time.Now()
@@ -22,14 +22,14 @@ func ProcessPacket(client MQTT.Client, topic, message string) {
 	log.Info().Int8("Topic", topicType).Str("DeviceId", deviceId).Send()
 
 	if topicType == 1 {
-		processor.ProcessGps(client, deviceId, message, packetTime)
+		processor.ProcessGps(client, deviceId, payload, packetTime)
 	} else if topicType == 3 {
-		processor.ProcessAlarmStatus(client, deviceId, message)
+		processor.ProcessAlarmStatus(client, deviceId, payload)
 	} else if topicType == 4 {
-		processor.ProcessDGStatus(client, deviceId, message)
+		processor.ProcessDGStatus(client, deviceId, payload)
 	} else if topicType == 2 {
-		processor.ProcessPowerData(client, deviceId, message)
+		processor.ProcessPowerData(client, deviceId, payload)
 	} else if topicType == 5 {
-		processor.ProcessE483Can(client, deviceId, message)
+		processor.ProcessE483Can(client, deviceId, payload)
 	}
 }

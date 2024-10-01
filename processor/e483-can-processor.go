@@ -29,7 +29,7 @@ func ProcessE483Can(client MQTT.Client, serialNo, message string) {
 		canData = append(canData, float64(dataFloat64))
 	}
 
-	if len(canData) != 58 {
+	if len(canData) != 17 {
 		log.Error().Str("ProcessE483Can: Wrong can data", serialNo).Send()
 		return
 	}
