@@ -10,7 +10,7 @@ import (
 )
 
 type AssetLatestLocation struct {
-	AssetID  uint           `json:"asset_id"`
+	AssetID  string         `json:"asset_id"`
 	Name     string         `json:"name"`
 	Position models.GeoJson `json:"position"`
 	ReadAt   *time.Time     `json:"read_at"`
@@ -32,10 +32,10 @@ func FetchAssetLocations(c *fiber.Ctx) error {
 
 	err = database.Database.Raw(`
 			SELECT 
-					assets.id, 
-					assets.name, 
+					assets.id as asset_id, 
+					assets.name as name, 
 					ST_AsGeoJSON(device_last_locations.position) as position,
-				device_last_locations.read_at
+				device_last_locations.read_at as read_at
 			FROM assets
 			JOIN asset_devices ON assets.id = asset_devices.asset_id
 			JOIN devices ON asset_devices.device_id = devices.id
