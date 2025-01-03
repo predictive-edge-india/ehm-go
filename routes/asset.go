@@ -14,6 +14,8 @@ func AssetRoutes(app fiber.Router) {
 	group.Delete("/:assetId/devices/:deviceId", middlewares.Protected(), assetHandlers.UnassignAssetDevice)
 	group.Post("/:assetId/devices", middlewares.Protected(), assetHandlers.AssignAssetDevice)
 	group.Get("/:assetId/devices", middlewares.Protected(), assetHandlers.FetchAssetDevices)
+	group.Post("/:assetId/limits", middlewares.Protected(), assetHandlers.UpdatePowerLimit)
+	group.Get("/:assetId/limits", middlewares.Protected(), assetHandlers.GetPowerLimit)
 	group.Patch("/:assetId", middlewares.Protected(), assetHandlers.UpdateAssetDetails)
 	group.Get("/:assetId", middlewares.Protected(), assetHandlers.FetchAssetDetails)
 
